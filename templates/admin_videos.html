@@ -1,0 +1,2479 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Videos | KSS Admin</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet"
+    >
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --bg: #0b0f19;
+            --sidebar: #101522;
+            --card: #121827;
+            --card-hover: #171e2e;
+            --input: #0d1320;
+
+            --border: rgba(255,255,255,.07);
+
+            --text: #f5f7fb;
+            --muted: #8b95a7;
+
+            --primary: #ff3158;
+            --primary-dark: #d91f43;
+
+            --green: #27d17f;
+            --yellow: #f5c451;
+            --blue: #4d9fff;
+            --orange: #ff9d4d;
+            --danger: #ff5c6c;
+            --purple: #a678ff;
+        }
+
+        body {
+            font-family: "Inter", sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        button,
+        input,
+        select {
+            font-family: inherit;
+        }
+
+        /* =========================
+           SIDEBAR
+        ========================= */
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+
+            width: 250px;
+
+            background: var(--sidebar);
+
+            border-right: 1px solid var(--border);
+
+            padding: 24px 16px;
+
+            z-index: 1000;
+
+            transition: transform .25s ease;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 11px;
+
+            padding: 0 10px 28px;
+        }
+
+        .brand-icon {
+            width: 38px;
+            height: 38px;
+
+            border-radius: 11px;
+
+            background: var(--primary);
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            font-weight: 800;
+            font-size: 19px;
+
+            box-shadow:
+                0 8px 25px rgba(255,49,88,.22);
+        }
+
+        .brand-name {
+            font-size: 21px;
+            font-weight: 800;
+            letter-spacing: -.5px;
+        }
+
+        .nav-label {
+            color: #5e6879;
+
+            font-size: 10px;
+            font-weight: 700;
+
+            letter-spacing: 1.2px;
+
+            padding: 0 12px;
+
+            margin: 12px 0 8px;
+
+            text-transform: uppercase;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 13px;
+
+            padding: 12px 13px;
+
+            margin-bottom: 4px;
+
+            border-radius: 10px;
+
+            color: var(--muted);
+
+            font-size: 13px;
+            font-weight: 600;
+
+            transition: .2s;
+        }
+
+        .nav-item:hover {
+            color: var(--text);
+            background: rgba(255,255,255,.045);
+        }
+
+        .nav-item.active {
+            color: #fff;
+            background: rgba(255,49,88,.12);
+        }
+
+        .nav-item.active .nav-icon {
+            color: var(--primary);
+        }
+
+        .nav-icon {
+            width: 19px;
+            text-align: center;
+            font-size: 16px;
+        }
+
+        /* =========================
+           MAIN
+        ========================= */
+
+        .main {
+            margin-left: 250px;
+            min-height: 100vh;
+        }
+
+        .topbar {
+            height: 76px;
+
+            border-bottom: 1px solid var(--border);
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            padding: 0 32px;
+
+            background: rgba(11,15,25,.92);
+
+            backdrop-filter: blur(14px);
+
+            position: sticky;
+            top: 0;
+
+            z-index: 900;
+        }
+
+        .topbar-left {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .mobile-menu {
+            display: none;
+
+            border: 0;
+            background: transparent;
+
+            color: white;
+
+            font-size: 22px;
+
+            cursor: pointer;
+        }
+
+        .page-title {
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .topbar-right {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+        }
+
+        .notification {
+            position: relative;
+
+            color: var(--muted);
+
+            font-size: 19px;
+        }
+
+        .notification-dot {
+            position: absolute;
+
+            width: 6px;
+            height: 6px;
+
+            border-radius: 50%;
+
+            background: var(--primary);
+
+            top: 0;
+            right: -1px;
+        }
+
+        .admin-profile {
+            display: flex;
+            align-items: center;
+
+            gap: 10px;
+        }
+
+        .admin-avatar {
+            width: 35px;
+            height: 35px;
+
+            border-radius: 50%;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #ff3158,
+                    #8d2040
+                );
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            font-size: 12px;
+            font-weight: 800;
+        }
+
+        .admin-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .admin-name {
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .admin-role {
+            font-size: 10px;
+            color: var(--muted);
+            margin-top: 2px;
+        }
+
+        /* =========================
+           CONTENT
+        ========================= */
+
+        .content {
+            padding: 32px;
+        }
+
+        .page-heading {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+
+            gap: 20px;
+
+            margin-bottom: 27px;
+        }
+
+        .heading-title {
+            font-size: 27px;
+
+            font-weight: 800;
+
+            letter-spacing: -.7px;
+        }
+
+        .heading-subtitle {
+            color: var(--muted);
+
+            font-size: 13px;
+
+            margin-top: 7px;
+        }
+
+        .primary-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+
+            gap: 8px;
+
+            background: var(--primary);
+
+            color: white;
+
+            border: 0;
+
+            border-radius: 9px;
+
+            padding: 11px 17px;
+
+            font-size: 12px;
+
+            font-weight: 700;
+
+            cursor: pointer;
+
+            transition: .2s;
+        }
+
+        .primary-btn:hover {
+            background: var(--primary-dark);
+
+            transform: translateY(-1px);
+        }
+
+        /* =========================
+           STATS
+        ========================= */
+
+        .stats-grid {
+            display: grid;
+
+            grid-template-columns:
+                repeat(5, 1fr);
+
+            gap: 15px;
+
+            margin-bottom: 25px;
+        }
+
+        .stat-card {
+            background: var(--card);
+
+            border: 1px solid var(--border);
+
+            border-radius: 13px;
+
+            padding: 18px;
+
+            position: relative;
+
+            overflow: hidden;
+        }
+
+        .stat-top {
+            display: flex;
+
+            align-items: center;
+            justify-content: space-between;
+
+            margin-bottom: 15px;
+        }
+
+        .stat-label {
+            color: var(--muted);
+
+            font-size: 10px;
+
+            font-weight: 600;
+        }
+
+        .stat-icon {
+            width: 32px;
+            height: 32px;
+
+            border-radius: 9px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            background: rgba(255,49,88,.09);
+
+            color: var(--primary);
+
+            font-size: 14px;
+        }
+
+        .stat-value {
+            font-size: 23px;
+
+            font-weight: 800;
+
+            letter-spacing: -.5px;
+        }
+
+        .stat-card.processing .stat-icon {
+            color: var(--yellow);
+            background: rgba(245,196,81,.08);
+        }
+
+        .stat-card.published .stat-icon {
+            color: var(--green);
+            background: rgba(39,209,127,.08);
+        }
+
+        .stat-card.paid .stat-icon {
+            color: var(--purple);
+            background: rgba(166,120,255,.08);
+        }
+
+        /* =========================
+           PANEL
+        ========================= */
+
+        .panel {
+            background: var(--card);
+
+            border: 1px solid var(--border);
+
+            border-radius: 14px;
+
+            overflow: hidden;
+        }
+
+        /* =========================
+           FILTERS
+        ========================= */
+
+        .filters {
+            padding: 17px;
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 10px;
+
+            border-bottom: 1px solid var(--border);
+
+            flex-wrap: wrap;
+        }
+
+        .search-box {
+            position: relative;
+
+            flex: 1;
+
+            min-width: 230px;
+        }
+
+        .search-icon {
+            position: absolute;
+
+            left: 13px;
+            top: 50%;
+
+            transform: translateY(-50%);
+
+            color: #687386;
+
+            font-size: 14px;
+        }
+
+        .search-box input {
+            width: 100%;
+
+            height: 40px;
+
+            background: var(--input);
+
+            color: var(--text);
+
+            border: 1px solid var(--border);
+
+            border-radius: 8px;
+
+            padding: 0 13px 0 38px;
+
+            outline: none;
+
+            font-size: 12px;
+        }
+
+        .search-box input:focus {
+            border-color: rgba(255,49,88,.45);
+        }
+
+        .filter-select {
+            height: 40px;
+
+            min-width: 135px;
+
+            background: var(--input);
+
+            color: #dce1e9;
+
+            border: 1px solid var(--border);
+
+            border-radius: 8px;
+
+            padding: 0 12px;
+
+            outline: none;
+
+            font-size: 11px;
+        }
+
+        .clear-btn {
+            height: 40px;
+
+            padding: 0 13px;
+
+            border-radius: 8px;
+
+            border: 1px solid var(--border);
+
+            background: transparent;
+
+            color: var(--muted);
+
+            cursor: pointer;
+
+            font-size: 11px;
+
+            font-weight: 600;
+        }
+
+        .clear-btn:hover {
+            color: white;
+
+            background: rgba(255,255,255,.04);
+        }
+
+        /* =========================
+           TABLE
+        ========================= */
+
+        .table-wrap {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+
+            border-collapse: collapse;
+
+            min-width: 1150px;
+        }
+
+        th {
+            text-align: left;
+
+            color: #687386;
+
+            font-size: 9px;
+
+            font-weight: 700;
+
+            text-transform: uppercase;
+
+            letter-spacing: .6px;
+
+            padding: 14px 17px;
+
+            border-bottom: 1px solid var(--border);
+
+            white-space: nowrap;
+        }
+
+        td {
+            padding: 14px 17px;
+
+            border-bottom:
+                1px solid rgba(255,255,255,.045);
+
+            font-size: 11px;
+
+            vertical-align: middle;
+        }
+
+        tbody tr {
+            transition: .15s;
+        }
+
+        tbody tr:hover {
+            background: rgba(255,255,255,.025);
+        }
+
+        tbody tr:last-child td {
+            border-bottom: 0;
+        }
+
+        /* =========================
+           VIDEO CELL
+        ========================= */
+
+        .video-cell {
+            display: flex;
+
+            align-items: center;
+
+            gap: 12px;
+
+            min-width: 310px;
+        }
+
+        .thumbnail {
+            width: 110px;
+            height: 62px;
+
+            border-radius: 7px;
+
+            object-fit: cover;
+
+            background: #1c2433;
+
+            flex-shrink: 0;
+        }
+
+        .thumbnail-placeholder {
+            width: 110px;
+            height: 62px;
+
+            border-radius: 7px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #252e40,
+                    #151c2a
+                );
+
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
+
+            color: #798598;
+
+            font-size: 20px;
+
+            flex-shrink: 0;
+        }
+
+        .video-info {
+            min-width: 0;
+        }
+
+        .video-title {
+            color: #eef1f6;
+
+            font-size: 12px;
+
+            font-weight: 700;
+
+            line-height: 1.4;
+
+            display: -webkit-box;
+
+            -webkit-line-clamp: 2;
+
+            -webkit-box-orient: vertical;
+
+            overflow: hidden;
+        }
+
+        .video-meta {
+            color: #687386;
+
+            font-size: 9px;
+
+            margin-top: 5px;
+
+            white-space: nowrap;
+        }
+
+        /* =========================
+           CHANNEL
+        ========================= */
+
+        .channel-name {
+            color: #cdd3dd;
+
+            font-weight: 600;
+
+            white-space: nowrap;
+        }
+
+        .category-name {
+            color: #687386;
+
+            font-size: 9px;
+
+            margin-top: 4px;
+        }
+
+        /* =========================
+           STATUS
+        ========================= */
+
+        .status-badge {
+            display: inline-flex;
+
+            align-items: center;
+
+            gap: 5px;
+
+            padding: 5px 9px;
+
+            border-radius: 20px;
+
+            font-size: 9px;
+
+            font-weight: 700;
+
+            white-space: nowrap;
+        }
+
+        .status-published {
+            color: var(--green);
+
+            background: rgba(39,209,127,.09);
+        }
+
+        .status-ready {
+            color: var(--blue);
+
+            background: rgba(77,159,255,.09);
+        }
+
+        .status-processing {
+            color: var(--yellow);
+
+            background: rgba(245,196,81,.09);
+        }
+
+        .status-draft {
+            color: #aab3c1;
+
+            background: rgba(170,179,193,.08);
+        }
+
+        .status-unpublished {
+            color: var(--orange);
+
+            background: rgba(255,157,77,.09);
+        }
+
+        .status-failed {
+            color: var(--danger);
+
+            background: rgba(255,92,108,.09);
+        }
+
+        .status-deleted {
+            color: #707989;
+
+            background: rgba(112,121,137,.08);
+        }
+
+        /* =========================
+           ACCESS
+        ========================= */
+
+        .access-list {
+            display: flex;
+
+            align-items: center;
+
+            gap: 5px;
+
+            flex-wrap: wrap;
+
+            max-width: 150px;
+        }
+
+        .access-badge {
+            padding: 4px 7px;
+
+            border-radius: 5px;
+
+            font-size: 8px;
+
+            font-weight: 700;
+
+            white-space: nowrap;
+        }
+
+        .access-free {
+            color: var(--green);
+
+            background: rgba(39,209,127,.08);
+        }
+
+        .access-rental {
+            color: var(--yellow);
+
+            background: rgba(245,196,81,.08);
+        }
+
+        .access-purchase {
+            color: var(--purple);
+
+            background: rgba(166,120,255,.08);
+        }
+
+        .access-subscription {
+            color: var(--blue);
+
+            background: rgba(77,159,255,.08);
+        }
+
+        .views {
+            color: #dce1e9;
+
+            font-weight: 600;
+
+            white-space: nowrap;
+        }
+
+        /* =========================
+           ACTIONS
+        ========================= */
+
+        .actions {
+            display: flex;
+
+            align-items: center;
+
+            gap: 6px;
+        }
+
+        .action-btn {
+            width: 30px;
+            height: 30px;
+
+            border-radius: 7px;
+
+            border: 1px solid var(--border);
+
+            background: transparent;
+
+            color: #8e98a9;
+
+            cursor: pointer;
+
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
+
+            font-size: 11px;
+
+            transition: .15s;
+        }
+
+        .action-btn:hover {
+            color: white;
+
+            background: rgba(255,255,255,.05);
+        }
+
+        .action-btn.success:hover {
+            color: var(--green);
+
+            border-color:
+                rgba(39,209,127,.2);
+        }
+
+        .action-btn.warning:hover {
+            color: var(--yellow);
+
+            border-color:
+                rgba(245,196,81,.2);
+        }
+
+        .action-btn.danger:hover {
+            color: var(--danger);
+
+            border-color:
+                rgba(255,92,108,.2);
+        }
+
+        /* =========================
+           EMPTY
+        ========================= */
+
+        .empty-state {
+            text-align: center;
+
+            padding: 65px 20px;
+
+            color: var(--muted);
+        }
+
+        .empty-icon {
+            font-size: 32px;
+
+            margin-bottom: 12px;
+
+            opacity: .6;
+        }
+
+        .empty-title {
+            color: #d9dee7;
+
+            font-size: 14px;
+
+            font-weight: 700;
+
+            margin-bottom: 5px;
+        }
+
+        .empty-text {
+            font-size: 11px;
+        }
+
+        /* =========================
+           MODAL
+        ========================= */
+
+        .modal-overlay {
+            display: none;
+
+            position: fixed;
+
+            inset: 0;
+
+            background: rgba(0,0,0,.7);
+
+            backdrop-filter: blur(5px);
+
+            align-items: center;
+            justify-content: center;
+
+            z-index: 3000;
+
+            padding: 20px;
+        }
+
+        .modal-overlay.show {
+            display: flex;
+        }
+
+        .modal {
+            width: 100%;
+
+            max-width: 410px;
+
+            background: #141a27;
+
+            border: 1px solid var(--border);
+
+            border-radius: 15px;
+
+            padding: 24px;
+
+            box-shadow:
+                0 25px 80px rgba(0,0,0,.45);
+        }
+
+        .modal-title {
+            font-size: 17px;
+
+            font-weight: 800;
+
+            margin-bottom: 8px;
+        }
+
+        .modal-text {
+            color: var(--muted);
+
+            font-size: 12px;
+
+            line-height: 1.6;
+
+            margin-bottom: 23px;
+        }
+
+        .modal-actions {
+            display: flex;
+
+            justify-content: flex-end;
+
+            gap: 9px;
+        }
+
+        .modal-btn {
+            padding: 10px 15px;
+
+            border-radius: 8px;
+
+            border: 1px solid var(--border);
+
+            background: transparent;
+
+            color: #c8ced8;
+
+            font-size: 11px;
+
+            font-weight: 700;
+
+            cursor: pointer;
+        }
+
+        .modal-btn.confirm {
+            background: var(--primary);
+
+            border-color: var(--primary);
+
+            color: white;
+        }
+
+        .modal-btn.confirm.publish {
+            background: var(--green);
+
+            border-color: var(--green);
+        }
+
+        .modal-btn.confirm.unpublish {
+            background: var(--orange);
+
+            border-color: var(--orange);
+        }
+
+        /* =========================
+           RESPONSIVE
+        ========================= */
+
+        @media (max-width: 1250px) {
+
+            .stats-grid {
+                grid-template-columns:
+                    repeat(3, 1fr);
+            }
+
+        }
+
+        @media (max-width: 900px) {
+
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+
+            .main {
+                margin-left: 0;
+            }
+
+            .mobile-menu {
+                display: block;
+            }
+
+            .content {
+                padding: 22px 17px;
+            }
+
+            .topbar {
+                padding: 0 17px;
+            }
+
+            .admin-info {
+                display: none;
+            }
+
+        }
+
+        @media (max-width: 650px) {
+
+            .stats-grid {
+                grid-template-columns:
+                    repeat(2, 1fr);
+            }
+
+            .page-heading {
+                flex-direction: column;
+            }
+
+            .primary-btn {
+                width: 100%;
+            }
+
+            .search-box {
+                min-width: 100%;
+            }
+
+        }
+
+        @media (max-width: 450px) {
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+        }
+
+    </style>
+</head>
+
+<body>
+
+
+<!-- =========================
+     SIDEBAR
+========================= -->
+
+<aside class="sidebar" id="sidebar">
+
+    <div class="brand">
+
+        <div class="brand-icon">
+            K
+        </div>
+
+        <div class="brand-name">
+            KSS
+        </div>
+
+    </div>
+
+
+    <div class="nav-label">
+        Overview
+    </div>
+
+    <a
+        href="{{ url_for('admin_dashboard') }}"
+        class="nav-item"
+    >
+        <span class="nav-icon">▦</span>
+        Dashboard
+    </a>
+
+
+    <div class="nav-label">
+        Management
+    </div>
+
+    <a
+        href="{{ url_for('admin_users') }}"
+        class="nav-item"
+    >
+        <span class="nav-icon">♙</span>
+        Users
+    </a>
+
+    <a
+        href="{{ url_for('admin_channels') }}"
+        class="nav-item"
+    >
+        <span class="nav-icon">◉</span>
+        Channels
+    </a>
+
+    <a
+        href="{{ url_for('admin_videos') }}"
+        class="nav-item active"
+    >
+        <span class="nav-icon">▶</span>
+        Videos
+    </a>
+
+    <a
+        href="{{ url_for('admin_payments') }}"
+        class="nav-item"
+    >
+        <span class="nav-icon">₵</span>
+        Payments
+    </a>
+
+
+    <div class="nav-label">
+        Insights
+    </div>
+
+    <a
+        href="{{ url_for('admin_analytics') }}"
+        class="nav-item"
+    >
+        <span class="nav-icon">⌁</span>
+        Analytics
+    </a>
+
+
+    <div class="nav-label">
+        System
+    </div>
+
+    <a href="#" class="nav-item">
+        <span class="nav-icon">⚙</span>
+        Settings
+    </a>
+
+    <a href="#" class="nav-item">
+        <span class="nav-icon">?</span>
+        Help
+    </a>
+
+</aside>
+
+
+<!-- =========================
+     MAIN
+========================= -->
+
+<main class="main">
+
+
+    <!-- TOPBAR -->
+
+    <header class="topbar">
+
+        <div class="topbar-left">
+
+            <button
+                class="mobile-menu"
+                onclick="toggleSidebar()"
+            >
+                ☰
+            </button>
+
+            <div class="page-title">
+                Videos
+            </div>
+
+        </div>
+
+
+        <div class="topbar-right">
+
+            <div class="notification">
+                ♢
+                <span class="notification-dot"></span>
+            </div>
+
+
+            <div class="admin-profile">
+
+                <div class="admin-avatar">
+
+                    {% if current_user %}
+                        {{ current_user.full_name[:1]|upper }}
+                    {% else %}
+                        A
+                    {% endif %}
+
+                </div>
+
+
+                <div class="admin-info">
+
+                    <div class="admin-name">
+
+                        {% if current_user %}
+                            {{ current_user.full_name }}
+                        {% else %}
+                            Administrator
+                        {% endif %}
+
+                    </div>
+
+                    <div class="admin-role">
+                        Administrator
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </header>
+
+
+    <!-- CONTENT -->
+
+    <section class="content">
+
+
+        <!-- HEADING -->
+
+        <div class="page-heading">
+
+            <div>
+
+                <div class="heading-title">
+                    Video Management
+                </div>
+
+                <div class="heading-subtitle">
+                    Manage videos, publication status and monetization settings.
+                </div>
+
+            </div>
+
+
+            <a
+                href="{{ url_for('admin_create_video') }}"
+                class="primary-btn"
+            >
+                <span>＋</span>
+                Add Video
+            </a>
+
+        </div>
+
+
+        <!-- =========================
+             STATISTICS
+        ========================= -->
+
+        <div class="stats-grid">
+
+
+            <div class="stat-card">
+
+                <div class="stat-top">
+
+                    <div class="stat-label">
+                        Total Videos
+                    </div>
+
+                    <div class="stat-icon">
+                        ▶
+                    </div>
+
+                </div>
+
+                <div class="stat-value">
+                    {{ video_stats.total|default(0) }}
+                </div>
+
+            </div>
+
+
+            <div class="stat-card published">
+
+                <div class="stat-top">
+
+                    <div class="stat-label">
+                        Published
+                    </div>
+
+                    <div class="stat-icon">
+                        ✓
+                    </div>
+
+                </div>
+
+                <div class="stat-value">
+                    {{ video_stats.published|default(0) }}
+                </div>
+
+            </div>
+
+
+            <div class="stat-card processing">
+
+                <div class="stat-top">
+
+                    <div class="stat-label">
+                        Processing
+                    </div>
+
+                    <div class="stat-icon">
+                        ◌
+                    </div>
+
+                </div>
+
+                <div class="stat-value">
+                    {{ video_stats.processing|default(0) }}
+                </div>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <div class="stat-top">
+
+                    <div class="stat-label">
+                        Drafts
+                    </div>
+
+                    <div class="stat-icon">
+                        ✎
+                    </div>
+
+                </div>
+
+                <div class="stat-value">
+                    {{ video_stats.drafts|default(0) }}
+                </div>
+
+            </div>
+
+
+            <div class="stat-card paid">
+
+                <div class="stat-top">
+
+                    <div class="stat-label">
+                        Paid Content
+                    </div>
+
+                    <div class="stat-icon">
+                        ₵
+                    </div>
+
+                </div>
+
+                <div class="stat-value">
+                    {{ video_stats.paid|default(0) }}
+                </div>
+
+            </div>
+
+
+        </div>
+
+
+        <!-- =========================
+             VIDEO TABLE
+        ========================= -->
+
+        <div class="panel">
+
+
+            <!-- FILTERS -->
+
+            <div class="filters">
+
+
+                <div class="search-box">
+
+                    <span class="search-icon">
+                        ⌕
+                    </span>
+
+                    <input
+                        type="text"
+                        id="videoSearch"
+                        placeholder="Search videos, channels or categories..."
+                        autocomplete="off"
+                    >
+
+                </div>
+
+
+                <select
+                    id="statusFilter"
+                    class="filter-select"
+                >
+
+                    <option value="all">
+                        All Status
+                    </option>
+
+                    <option value="published">
+                        Published
+                    </option>
+
+                    <option value="processing">
+                        Processing
+                    </option>
+
+                    <option value="ready">
+                        Ready
+                    </option>
+
+                    <option value="draft">
+                        Draft
+                    </option>
+
+                    <option value="unpublished">
+                        Unpublished
+                    </option>
+
+                    <option value="failed">
+                        Failed
+                    </option>
+
+                </select>
+
+
+                <select
+                    id="accessFilter"
+                    class="filter-select"
+                >
+
+                    <option value="all">
+                        All Access
+                    </option>
+
+                    <option value="free">
+                        Free
+                    </option>
+
+                    <option value="rental">
+                        Rental
+                    </option>
+
+                    <option value="purchase">
+                        Purchase
+                    </option>
+
+                    <option value="subscription">
+                        Subscription
+                    </option>
+
+                    <option value="paid">
+                        Paid Content
+                    </option>
+
+                </select>
+
+
+                <select
+                    id="channelFilter"
+                    class="filter-select"
+                >
+
+                    <option value="all">
+                        All Channels
+                    </option>
+
+                    {% for channel in channels %}
+
+                        <option
+                            value="{{ channel.channel_id }}"
+                        >
+                            {{ channel.channel_name }}
+                        </option>
+
+                    {% endfor %}
+
+                </select>
+
+
+                <button
+                    class="clear-btn"
+                    onclick="clearFilters()"
+                >
+                    Clear
+                </button>
+
+
+            </div>
+
+
+            <!-- TABLE -->
+
+            <div class="table-wrap">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Video
+                            </th>
+
+                            <th>
+                                Channel
+                            </th>
+
+                            <th>
+                                Access
+                            </th>
+
+                            <th>
+                                Views
+                            </th>
+
+                            <th>
+                                Status
+                            </th>
+
+                            <th>
+                                Published
+                            </th>
+
+                            <th>
+                                Actions
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody id="videosTable">
+
+
+                        {% for video in videos %}
+
+                        <tr
+                            class="video-row"
+
+                            data-search="
+                                {{ video.title|lower }}
+                                {{ (video.channel_name or '')|lower }}
+                                {{ (video.category_name or '')|lower }}
+                            "
+
+                            data-status="{{ video.status }}"
+
+                            data-channel="{{ video.channel_id }}"
+
+                            data-access="
+                                {% if video.is_free %}
+                                    free
+                                {% elif video.rental_enabled and video.purchase_enabled and video.subscription_enabled %}
+                                    paid
+                                {% elif video.rental_enabled %}
+                                    rental
+                                {% elif video.purchase_enabled %}
+                                    purchase
+                                {% elif video.subscription_enabled %}
+                                    subscription
+                                {% else %}
+                                    none
+                                {% endif %}
+                            "
+                        >
+
+
+                            <!-- VIDEO -->
+
+                            <td>
+
+                                <div class="video-cell">
+
+
+                                    {% if video.thumbnail_url %}
+
+                                        <img
+                                            src="{{ video.thumbnail_url }}"
+                                            class="thumbnail"
+                                            alt="{{ video.title }}"
+                                        >
+
+                                    {% else %}
+
+                                        <div class="thumbnail-placeholder">
+                                            ▶
+                                        </div>
+
+                                    {% endif %}
+
+
+                                    <div class="video-info">
+
+                                        <div class="video-title">
+                                            {{ video.title }}
+                                        </div>
+
+                                        <div class="video-meta">
+
+                                            {% if video.duration_seconds %}
+
+                                                {% set minutes =
+                                                    video.duration_seconds // 60
+                                                %}
+
+                                                {% set seconds =
+                                                    video.duration_seconds % 60
+                                                %}
+
+                                                {{ minutes }}:{{
+                                                    "%02d"|format(seconds)
+                                                }}
+
+                                            {% else %}
+
+                                                Duration unavailable
+
+                                            {% endif %}
+
+                                            {% if video.category_name %}
+                                                · {{ video.category_name }}
+                                            {% endif %}
+
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                            </td>
+
+
+                            <!-- CHANNEL -->
+
+                            <td>
+
+                                <div class="channel-name">
+
+                                    {{ video.channel_name or
+                                       "No Channel" }}
+
+                                </div>
+
+
+                                {% if video.category_name %}
+
+                                    <div class="category-name">
+                                        {{ video.category_name }}
+                                    </div>
+
+                                {% endif %}
+
+                            </td>
+
+
+                            <!-- ACCESS -->
+
+                            <td>
+
+                                <div class="access-list">
+
+
+                                    {% if video.is_free %}
+
+                                        <span
+                                            class="access-badge access-free"
+                                        >
+                                            FREE
+                                        </span>
+
+                                    {% endif %}
+
+
+                                    {% if video.rental_enabled %}
+
+                                        <span
+                                            class="access-badge access-rental"
+                                        >
+                                            RENTAL
+                                        </span>
+
+                                    {% endif %}
+
+
+                                    {% if video.purchase_enabled %}
+
+                                        <span
+                                            class="access-badge access-purchase"
+                                        >
+                                            BUY
+                                        </span>
+
+                                    {% endif %}
+
+
+                                    {% if video.subscription_enabled %}
+
+                                        <span
+                                            class="access-badge access-subscription"
+                                        >
+                                            SUB
+                                        </span>
+
+                                    {% endif %}
+
+
+                                    {% if not video.is_free
+                                          and not video.rental_enabled
+                                          and not video.purchase_enabled
+                                          and not video.subscription_enabled %}
+
+                                        <span
+                                            class="access-badge"
+                                            style="
+                                                color:#8b95a7;
+                                                background:
+                                                rgba(139,149,167,.08);
+                                            "
+                                        >
+                                            PRIVATE
+                                        </span>
+
+                                    {% endif %}
+
+
+                                </div>
+
+                            </td>
+
+
+                            <!-- VIEWS -->
+
+                            <td>
+
+                                <span class="views">
+
+                                    {{ "{:,}".format(
+                                        video.total_views or 0
+                                    ) }}
+
+                                </span>
+
+                            </td>
+
+
+                            <!-- STATUS -->
+
+                            <td>
+
+
+                                {% if video.status == "published" %}
+
+                                    <span
+                                        class="
+                                            status-badge
+                                            status-published
+                                        "
+                                    >
+                                        ● Published
+                                    </span>
+
+
+                                {% elif video.status == "processing" %}
+
+                                    <span
+                                        class="
+                                            status-badge
+                                            status-processing
+                                        "
+                                    >
+                                        ● Processing
+                                    </span>
+
+
+                                {% elif video.status == "ready" %}
+
+                                    <span
+                                        class="
+                                            status-badge
+                                            status-ready
+                                        "
+                                    >
+                                        ● Ready
+                                    </span>
+
+
+                                {% elif video.status == "draft" %}
+
+                                    <span
+                                        class="
+                                            status-badge
+                                            status-draft
+                                        "
+                                    >
+                                        ● Draft
+                                    </span>
+
+
+                                {% elif video.status == "unpublished" %}
+
+                                    <span
+                                        class="
+                                            status-badge
+                                            status-unpublished
+                                        "
+                                    >
+                                        ● Unpublished
+                                    </span>
+
+
+                                {% elif video.status == "failed" %}
+
+                                    <span
+                                        class="
+                                            status-badge
+                                            status-failed
+                                        "
+                                    >
+                                        ● Failed
+                                    </span>
+
+
+                                {% else %}
+
+                                    <span
+                                        class="
+                                            status-badge
+                                            status-deleted
+                                        "
+                                    >
+                                        ● {{ video.status|capitalize }}
+                                    </span>
+
+                                {% endif %}
+
+
+                            </td>
+
+
+                            <!-- PUBLISHED DATE -->
+
+                            <td>
+
+                                {% if video.published_at %}
+
+                                    <span
+                                        style="
+                                            color:#aeb7c7;
+                                            white-space:nowrap;
+                                        "
+                                    >
+                                        {{ video.published_at.strftime(
+                                            "%d %b %Y"
+                                        ) }}
+                                    </span>
+
+                                {% else %}
+
+                                    <span
+                                        style="
+                                            color:#687386;
+                                        "
+                                    >
+                                        —
+                                    </span>
+
+                                {% endif %}
+
+                            </td>
+
+
+                            <!-- ACTIONS -->
+
+                            <td>
+
+                                <div class="actions">
+
+
+                                    <!-- VIEW -->
+
+                                    <a
+                                        href="{{ url_for(
+                                            'video_details',
+                                            slug=video.slug
+                                        ) }}"
+                                        class="action-btn"
+                                        title="View video"
+                                        target="_blank"
+                                    >
+                                        ↗
+                                    </a>
+
+
+                                    <!-- EDIT -->
+
+                                    <a
+                                        href="{{ url_for(
+                                            'admin_create_video',
+                                            video_id=video.video_id
+                                        ) }}"
+                                        class="action-btn"
+                                        title="Edit video"
+                                    >
+                                        ✎
+                                    </a>
+
+
+                                    {% if video.status != "published" %}
+
+                                        <!-- PUBLISH -->
+
+                                        <button
+                                            type="button"
+                                            class="action-btn success"
+                                            title="Publish video"
+
+                                            onclick="openStatusModal(
+                                                {{ video.video_id }},
+                                                '{{ video.title|e }}',
+                                                'publish'
+                                            )"
+                                        >
+                                            ✓
+                                        </button>
+
+
+                                    {% else %}
+
+                                        <!-- UNPUBLISH -->
+
+                                        <button
+                                            type="button"
+                                            class="action-btn warning"
+                                            title="Unpublish video"
+
+                                            onclick="openStatusModal(
+                                                {{ video.video_id }},
+                                                '{{ video.title|e }}',
+                                                'unpublish'
+                                            )"
+                                        >
+                                            ↓
+                                        </button>
+
+                                    {% endif %}
+
+
+                                </div>
+
+                            </td>
+
+
+                        </tr>
+
+
+                        {% else %}
+
+
+                        <tr>
+
+                            <td colspan="7">
+
+                                <div class="empty-state">
+
+                                    <div class="empty-icon">
+                                        ▶
+                                    </div>
+
+                                    <div class="empty-title">
+                                        No videos yet
+                                    </div>
+
+                                    <div class="empty-text">
+                                        Add your first video to start building the KSS library.
+                                    </div>
+
+                                </div>
+
+                            </td>
+
+                        </tr>
+
+
+                        {% endfor %}
+
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+
+        </div>
+
+
+    </section>
+
+</main>
+
+
+<!-- =========================
+     STATUS MODAL
+========================= -->
+
+<div
+    class="modal-overlay"
+    id="statusModal"
+>
+
+    <div class="modal">
+
+
+        <div
+            class="modal-title"
+            id="modalTitle"
+        >
+            Change video status
+        </div>
+
+
+        <div
+            class="modal-text"
+            id="modalText"
+        >
+            Are you sure?
+        </div>
+
+
+        <form
+            id="statusForm"
+            method="POST"
+        >
+
+            <div class="modal-actions">
+
+
+                <button
+                    type="button"
+                    class="modal-btn"
+                    onclick="closeStatusModal()"
+                >
+                    Cancel
+                </button>
+
+
+                <button
+                    type="submit"
+                    class="modal-btn confirm"
+                    id="modalConfirm"
+                >
+                    Confirm
+                </button>
+
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<script>
+
+    /* =========================
+       SIDEBAR
+    ========================= */
+
+    function toggleSidebar() {
+
+        document
+            .getElementById("sidebar")
+            .classList
+            .toggle("open");
+
+    }
+
+
+    /* =========================
+       FILTER ELEMENTS
+    ========================= */
+
+    const videoSearch =
+        document.getElementById("videoSearch");
+
+    const statusFilter =
+        document.getElementById("statusFilter");
+
+    const accessFilter =
+        document.getElementById("accessFilter");
+
+    const channelFilter =
+        document.getElementById("channelFilter");
+
+
+    videoSearch.addEventListener(
+        "input",
+        filterVideos
+    );
+
+    statusFilter.addEventListener(
+        "change",
+        filterVideos
+    );
+
+    accessFilter.addEventListener(
+        "change",
+        filterVideos
+    );
+
+    channelFilter.addEventListener(
+        "change",
+        filterVideos
+    );
+
+
+    /* =========================
+       FILTER VIDEOS
+    ========================= */
+
+    function filterVideos() {
+
+        const search =
+            videoSearch.value
+                .trim()
+                .toLowerCase();
+
+        const status =
+            statusFilter.value;
+
+        const access =
+            accessFilter.value;
+
+        const channel =
+            channelFilter.value;
+
+
+        const rows =
+            document.querySelectorAll(
+                ".video-row"
+            );
+
+
+        rows.forEach(row => {
+
+            const rowSearch =
+                row.dataset.search || "";
+
+            const rowStatus =
+                row.dataset.status || "";
+
+            const rowAccess =
+                row.dataset.access || "";
+
+            const rowChannel =
+                row.dataset.channel || "";
+
+
+            const matchesSearch =
+                !search ||
+                rowSearch.includes(search);
+
+
+            const matchesStatus =
+                status === "all" ||
+                rowStatus === status;
+
+
+            let matchesAccess = true;
+
+
+            if (access !== "all") {
+
+                if (access === "paid") {
+
+                    matchesAccess =
+                        rowAccess === "paid" ||
+                        rowAccess === "rental" ||
+                        rowAccess === "purchase" ||
+                        rowAccess === "subscription";
+
+                } else {
+
+                    matchesAccess =
+                        rowAccess === access;
+
+                }
+
+            }
+
+
+            const matchesChannel =
+                channel === "all" ||
+                rowChannel === channel;
+
+
+            row.style.display =
+                matchesSearch &&
+                matchesStatus &&
+                matchesAccess &&
+                matchesChannel
+                    ? ""
+                    : "none";
+
+        });
+
+    }
+
+
+    /* =========================
+       CLEAR FILTERS
+    ========================= */
+
+    function clearFilters() {
+
+        videoSearch.value = "";
+
+        statusFilter.value = "all";
+
+        accessFilter.value = "all";
+
+        channelFilter.value = "all";
+
+        filterVideos();
+
+    }
+
+
+    /* =========================
+       STATUS MODAL
+    ========================= */
+
+    function openStatusModal(
+        videoId,
+        videoTitle,
+        action
+    ) {
+
+        const modal =
+            document.getElementById(
+                "statusModal"
+            );
+
+        const title =
+            document.getElementById(
+                "modalTitle"
+            );
+
+        const text =
+            document.getElementById(
+                "modalText"
+            );
+
+        const form =
+            document.getElementById(
+                "statusForm"
+            );
+
+        const confirm =
+            document.getElementById(
+                "modalConfirm"
+            );
+
+
+        if (action === "publish") {
+
+            title.textContent =
+                "Publish video";
+
+            text.textContent =
+                `Are you sure you want to publish "${videoTitle}"?`;
+
+            confirm.textContent =
+                "Publish";
+
+            confirm.classList.add(
+                "publish"
+            );
+
+            confirm.classList.remove(
+                "unpublish"
+            );
+
+            form.action =
+                `/admin/videos/${videoId}/publish`;
+
+        }
+
+
+        else if (action === "unpublish") {
+
+            title.textContent =
+                "Unpublish video";
+
+            text.textContent =
+                `Are you sure you want to unpublish "${videoTitle}"?`;
+
+            confirm.textContent =
+                "Unpublish";
+
+            confirm.classList.add(
+                "unpublish"
+            );
+
+            confirm.classList.remove(
+                "publish"
+            );
+
+            form.action =
+                `/admin/videos/${videoId}/unpublish`;
+
+        }
+
+
+        modal.classList.add("show");
+
+    }
+
+
+    function closeStatusModal() {
+
+        document
+            .getElementById("statusModal")
+            .classList
+            .remove("show");
+
+    }
+
+
+    /* =========================
+       CLOSE MODAL
+    ========================= */
+
+    document
+        .getElementById("statusModal")
+        .addEventListener(
+            "click",
+            function(event) {
+
+                if (event.target === this) {
+
+                    closeStatusModal();
+
+                }
+
+            }
+        );
+
+
+    document.addEventListener(
+        "keydown",
+        function(event) {
+
+            if (event.key === "Escape") {
+
+                closeStatusModal();
+
+            }
+
+        }
+    );
+
+</script>
+
+</body>
+</html>
+```

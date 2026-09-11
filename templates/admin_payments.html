@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payments | KSS Admin</title>
+    <style>
+        :root { --bg: #f5f7fb; --surface: #fff; --ink: #14213d; --muted: #6b7280; --line: #e6eaf0; --brand: #3158d4; --success: #087f5b; --warning: #a85b00; --danger: #c03221; }
+        * { box-sizing: border-box; }
+        body { margin: 0; color: var(--ink); background: var(--bg); font: 14px/1.5 Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+        .layout { min-height: 100vh; display: grid; grid-template-columns: 240px minmax(0, 1fr); }
+        .sidebar { background: #101b37; color: #d9e1f2; padding: 28px 16px; display: flex; flex-direction: column; }
+        .brand { color: white; display: flex; align-items: center; gap: 10px; text-decoration: none; font-size: 22px; font-weight: 800; padding: 0 12px 28px; }
+        .brand-mark { width: 28px; height: 28px; border-radius: 8px; background: linear-gradient(135deg, #7494ff, #4165e9); }
+        .nav-label { color: #8d9ab7; font-size: 11px; font-weight: 700; letter-spacing: .09em; margin: 18px 12px 8px; text-transform: uppercase; }
+        .nav-link { display: block; color: inherit; border-radius: 9px; padding: 10px 12px; margin: 3px 0; text-decoration: none; }
+        .nav-link:hover, .nav-link.active { color: white; background: #27385f; }
+        .profile { margin-top: auto; border-top: 1px solid #2a385a; padding: 20px 12px 0; }
+        .profile-name { color: white; font-weight: 700; }
+        .profile-role { color: #9faecc; font-size: 12px; }
+        .logout { display: inline-block; color: #bfc9dd; font-size: 13px; margin-top: 10px; text-decoration: none; }
+        main { min-width: 0; padding: 42px; }
+        .eyebrow { color: var(--brand); font-size: 12px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; }
+        h1 { margin: 3px 0 6px; font-size: clamp(28px, 4vw, 38px); letter-spacing: -.04em; }
+        .subtitle { color: var(--muted); margin: 0 0 30px; }
+        .summary { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; margin-bottom: 26px; }
+        .card, .panel { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; box-shadow: 0 4px 16px rgb(28 39 68 / 4%); }
+        .card { padding: 20px; }
+        .card-label { color: var(--muted); font-size: 13px; }
+        .card-value { font-size: 28px; font-weight: 800; margin-top: 5px; }
+        .panel { overflow: hidden; }
+        .panel-head { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 20px 22px; border-bottom: 1px solid var(--line); }
+        .panel h2 { font-size: 17px; margin: 0; }
+        .count { color: var(--muted); font-size: 13px; }
+        .table-wrap { overflow-x: auto; }
+        table { border-collapse: collapse; width: 100%; min-width: 780px; }
+        th { color: var(--muted); background: #fafbfe; font-size: 11px; letter-spacing: .05em; text-align: left; text-transform: uppercase; }
+        th, td { border-bottom: 1px solid var(--line); padding: 15px 22px; white-space: nowrap; }
+        tr:last-child td { border-bottom: 0; }
+        .customer { font-weight: 700; }
+        .secondary { color: var(--muted); font-size: 12px; margin-top: 2px; }
+        .amount { font-weight: 800; }
+        .badge { display: inline-block; border-radius: 999px; font-size: 12px; font-weight: 700; padding: 4px 9px; text-transform: capitalize; }
+        .badge-successful { color: var(--success); background: #e5f7f0; }
+        .badge-pending { color: var(--warning); background: #fff2db; }
+        .badge-failed, .badge-cancelled { color: var(--danger); background: #ffebe8; }
+        .badge-default { color: #44516d; background: #edf0f6; }
+        .empty { color: var(--muted); padding: 52px 22px; text-align: center; }
+        @media (max-width: 800px) { .layout { grid-template-columns: 1fr; } .sidebar { padding: 16px; } .nav-label, .profile { display: none; } .nav-link { display: inline-block; } .brand { padding-bottom: 8px; } main { padding: 26px 16px; } .summary { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+    <div class="layout">
+        <aside class="sidebar">
+            <a class="brand" href="{{ url_for('admin_dashboard') }}"><span class="brand-mark"></span>KSS</a>
+            <div class="nav-label">Administration</div>
+            <nav>
+                <a class="nav-link" href="{{ url_for('admin_dashboard') }}">Dashboard</a>
+                <a class="nav-link" href="{{ url_for('admin_users') }}">Users</a>
+                <a class="nav-link" href="{{ url_for('admin_channels') }}">Channels</a>
+                <a class="nav-link" href="{{ url_for('admin_videos') }}">Videos</a>
+                <a class="nav-link active" href="{{ url_for('admin_payments') }}">Payments</a>
+                <a class="nav-link" href="{{ url_for('admin_analytics') }}">Analytics</a>
+            </nav>
+            <div class="profile">
+                <div class="profile-name">{{ current_user.full_name if current_user else 'Administrator' }}</div>
+                <div class="profile-role">Administrator</div>
+                <a class="logout" href="{{ url_for('logout') }}">Sign out</a>
+            </div>
+        </aside>
+        <main>
+            <div class="eyebrow">Administration</div>
+            <h1>Payments</h1>
+            <p class="subtitle">Review the latest payment attempts and their current status.</p>
+            <section class="summary" aria-label="Payment summary">
+                <div class="card"><div class="card-label">Payment records</div><div class="card-value">{{ payments|length }}</div></div>
+                <div class="card"><div class="card-label">Successful payments</div><div class="card-value">{{ payments|selectattr('status', 'equalto', 'successful')|list|length }}</div></div>
+                <div class="card"><div class="card-label">Pending payments</div><div class="card-value">{{ payments|selectattr('status', 'equalto', 'pending')|list|length }}</div></div>
+            </section>
+            <section class="panel">
+                <div class="panel-head"><h2>Recent payments</h2><span class="count">Latest {{ payments|length }} record(s)</span></div>
+                {% if payments %}
+                    <div class="table-wrap">
+                        <table>
+                            <thead><tr><th>Customer</th><th>Type</th><th>Reference</th><th>Amount</th><th>Status</th><th>Created</th></tr></thead>
+                            <tbody>
+                                {% for payment in payments %}
+                                    <tr>
+                                        <td><div class="customer">{{ payment.full_name or payment.username or 'Deleted user' }}</div><div class="secondary">{{ payment.email or 'No email available' }}</div></td>
+                                        <td>
+                                            {% if payment.payment_type == 'video_purchase' %}Video purchase
+                                            {% elif payment.payment_type == 'video_rental' %}Video rental
+                                            {% elif payment.payment_type == 'channel_subscription' %}Channel subscription
+                                            {% else %}{{ payment.payment_type|replace('_', ' ')|title }}{% endif %}
+                                        </td>
+                                        <td><code>{{ payment.payment_reference }}</code></td>
+                                        <td class="amount">{{ payment.currency or 'GHS' }} {{ '%.2f'|format(payment.amount or 0) }}</td>
+                                        <td><span class="badge badge-{{ payment.status if payment.status in ['successful', 'pending', 'failed', 'cancelled'] else 'default' }}">{{ payment.status or 'unknown' }}</span></td>
+                                        <td>{{ payment.created_at.strftime('%d %b %Y, %H:%M') if payment.created_at else '—' }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="empty">No payment records have been created yet.</div>
+                {% endif %}
+            </section>
+        </main>
+    </div>
+</body>
+</html>

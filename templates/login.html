@@ -1,0 +1,727 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Sign In | KSS</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --bg: #080b12;
+            --card: #111722;
+            --card-border: rgba(255, 255, 255, 0.08);
+            --text: #ffffff;
+            --muted: #8f98a8;
+            --input: #0b1018;
+            --accent: #ff1744;
+            --accent-hover: #e9143d;
+            --danger: #ff4d67;
+        }
+
+        body {
+            min-height: 100vh;
+            font-family: Arial, Helvetica, sans-serif;
+            background:
+                radial-gradient(circle at 15% 20%, rgba(255, 23, 68, 0.10), transparent 30%),
+                radial-gradient(circle at 85% 80%, rgba(80, 80, 255, 0.08), transparent 30%),
+                var(--bg);
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+        }
+
+        .page-wrapper {
+            width: 100%;
+            max-width: 1050px;
+            min-height: 650px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            background: rgba(17, 23, 34, 0.92);
+            border: 1px solid var(--card-border);
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.45);
+            backdrop-filter: blur(20px);
+        }
+
+        /* --------------------------------
+           LEFT BRANDING PANEL
+        -------------------------------- */
+
+        .branding {
+            position: relative;
+            padding: 55px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            overflow: hidden;
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(255, 23, 68, 0.18),
+                    rgba(8, 11, 18, 0.2)
+                );
+        }
+
+        .branding::before {
+            content: "";
+            position: absolute;
+            width: 350px;
+            height: 350px;
+            border-radius: 50%;
+            background: rgba(255, 23, 68, 0.13);
+            filter: blur(70px);
+            top: -100px;
+            left: -100px;
+        }
+
+        .branding::after {
+            content: "";
+            position: absolute;
+            width: 250px;
+            height: 250px;
+            border-radius: 50%;
+            background: rgba(90, 80, 255, 0.10);
+            filter: blur(70px);
+            bottom: -100px;
+            right: -80px;
+        }
+
+        .brand-content,
+        .branding-footer {
+            position: relative;
+            z-index: 2;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 27px;
+            font-weight: 800;
+            letter-spacing: -1px;
+        }
+
+        .logo-icon {
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--accent);
+            box-shadow: 0 10px 30px rgba(255, 23, 68, 0.28);
+        }
+
+        .logo-icon::after {
+            content: "";
+            width: 0;
+            height: 0;
+            border-top: 8px solid transparent;
+            border-bottom: 8px solid transparent;
+            border-left: 12px solid white;
+            margin-left: 3px;
+        }
+
+        .brand-main {
+            margin-top: 100px;
+        }
+
+        .brand-main h1 {
+            font-size: 46px;
+            line-height: 1.08;
+            letter-spacing: -2px;
+            max-width: 430px;
+            margin-bottom: 22px;
+        }
+
+        .brand-main h1 span {
+            color: var(--accent);
+        }
+
+        .brand-main p {
+            max-width: 430px;
+            color: var(--muted);
+            font-size: 16px;
+            line-height: 1.7;
+        }
+
+        .features {
+            margin-top: 38px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .feature {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #dfe3eb;
+            font-size: 14px;
+        }
+
+        .feature-icon {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: rgba(255, 23, 68, 0.12);
+            border: 1px solid rgba(255, 23, 68, 0.25);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--accent);
+            font-size: 13px;
+        }
+
+        .branding-footer {
+            color: #687181;
+            font-size: 12px;
+        }
+
+        /* --------------------------------
+           LOGIN PANEL
+        -------------------------------- */
+
+        .login-panel {
+            background: rgba(10, 14, 21, 0.72);
+            padding: 55px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .login-container {
+            width: 100%;
+            max-width: 390px;
+        }
+
+        .login-header {
+            margin-bottom: 34px;
+        }
+
+        .login-header h2 {
+            font-size: 30px;
+            letter-spacing: -0.8px;
+            margin-bottom: 9px;
+        }
+
+        .login-header p {
+            color: var(--muted);
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        /* Alert */
+
+        .alert {
+            padding: 13px 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .alert-error {
+            background: rgba(255, 77, 103, 0.10);
+            border: 1px solid rgba(255, 77, 103, 0.25);
+            color: #ff8fa1;
+        }
+
+        .alert-success {
+            background: rgba(52, 211, 153, 0.10);
+            border: 1px solid rgba(52, 211, 153, 0.25);
+            color: #6ee7b7;
+        }
+
+        /* Form */
+
+        .form-group {
+            margin-bottom: 21px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 9px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #d8dce5;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #667080;
+            font-size: 15px;
+            pointer-events: none;
+        }
+
+        .form-control {
+            width: 100%;
+            height: 52px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 11px;
+            background: var(--input);
+            color: white;
+            padding: 0 15px 0 43px;
+            outline: none;
+            font-size: 14px;
+            transition: 0.2s ease;
+        }
+
+        .form-control::placeholder {
+            color: #596272;
+        }
+
+        .form-control:focus {
+            border-color: rgba(255, 23, 68, 0.65);
+            box-shadow: 0 0 0 3px rgba(255, 23, 68, 0.08);
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #687181;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .password-toggle:hover {
+            color: white;
+        }
+
+        .form-options {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 4px;
+            margin-bottom: 25px;
+        }
+
+        .remember {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #8f98a8;
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        .remember input {
+            accent-color: var(--accent);
+        }
+
+        .forgot {
+            color: var(--accent);
+            text-decoration: none;
+            font-size: 12px;
+        }
+
+        .forgot:hover {
+            text-decoration: underline;
+        }
+
+        .login-button {
+            width: 100%;
+            height: 52px;
+            border: none;
+            border-radius: 11px;
+            background: var(--accent);
+            color: white;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.2s ease;
+            box-shadow: 0 10px 25px rgba(255, 23, 68, 0.18);
+        }
+
+        .login-button:hover {
+            background: var(--accent-hover);
+            transform: translateY(-1px);
+            box-shadow: 0 13px 30px rgba(255, 23, 68, 0.25);
+        }
+
+        .login-button:active {
+            transform: translateY(0);
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 28px 0;
+            color: #555e6e;
+            font-size: 11px;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: "";
+            height: 1px;
+            background: rgba(255, 255, 255, 0.07);
+            flex: 1;
+        }
+
+        .register-text {
+            text-align: center;
+            color: #747d8d;
+            font-size: 13px;
+        }
+
+        .register-text a {
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .register-text a:hover {
+            color: var(--accent);
+        }
+
+        .security-note {
+            margin-top: 30px;
+            padding: 12px 14px;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.025);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            color: #687181;
+            font-size: 11px;
+            line-height: 1.5;
+            text-align: center;
+        }
+
+        /* --------------------------------
+           RESPONSIVE
+        -------------------------------- */
+
+        @media (max-width: 850px) {
+            .page-wrapper {
+                grid-template-columns: 1fr;
+                max-width: 500px;
+                min-height: auto;
+            }
+
+            .branding {
+                min-height: 300px;
+                padding: 35px;
+            }
+
+            .brand-main {
+                margin-top: 55px;
+            }
+
+            .brand-main h1 {
+                font-size: 34px;
+            }
+
+            .features {
+                display: none;
+            }
+
+            .branding-footer {
+                margin-top: 50px;
+            }
+
+            .login-panel {
+                padding: 40px 35px 45px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 0;
+                align-items: stretch;
+            }
+
+            .page-wrapper {
+                border-radius: 0;
+                border: none;
+                min-height: 100vh;
+            }
+
+            .branding {
+                min-height: 230px;
+                padding: 28px 24px;
+            }
+
+            .brand-main {
+                margin-top: 40px;
+            }
+
+            .brand-main h1 {
+                font-size: 30px;
+            }
+
+            .brand-main p {
+                font-size: 14px;
+            }
+
+            .login-panel {
+                padding: 35px 24px;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="page-wrapper">
+
+    <!-- BRANDING -->
+    <section class="branding">
+
+        <div class="brand-content">
+
+            <div class="logo">
+                <div class="logo-icon"></div>
+                <span>KSS</span>
+            </div>
+
+            <div class="brand-main">
+
+                <h1>
+                    Entertainment.<br>
+                    <span>Without limits.</span>
+                </h1>
+
+                <p>
+                    Discover premium videos, exclusive content and
+                    creators you love — all in one place.
+                </p>
+
+                <div class="features">
+
+                    <div class="feature">
+                        <div class="feature-icon">✓</div>
+                        <span>Watch free and premium content</span>
+                    </div>
+
+                    <div class="feature">
+                        <div class="feature-icon">✓</div>
+                        <span>Rent or purchase exclusive videos</span>
+                    </div>
+
+                    <div class="feature">
+                        <div class="feature-icon">✓</div>
+                        <span>Subscribe to your favourite channels</span>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="branding-footer">
+            © {{ current_year }} KSS. All rights reserved.
+        </div>
+
+    </section>
+
+
+    <!-- LOGIN -->
+    <section class="login-panel">
+
+        <div class="login-container">
+
+            <div class="login-header">
+                <h2>Welcome back</h2>
+                <p>
+                    Sign in to continue to your KSS account.
+                </p>
+            </div>
+
+
+            <!-- FLASH MESSAGES -->
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+
+                {% if messages %}
+
+                    {% for category, message in messages %}
+
+                        <div class="alert
+                            {% if category == 'error' or category == 'danger' %}
+                                alert-error
+                            {% else %}
+                                alert-success
+                            {% endif %}
+                        ">
+                            {{ message }}
+                        </div>
+
+                    {% endfor %}
+
+                {% endif %}
+
+            {% endwith %}
+
+
+            <form method="POST" action="{{ url_for('login') }}">
+
+<div class="form-group">
+
+    <label class="form-label" for="identifier">
+        Email or Username
+    </label>
+
+
+{% if active_sessions %}
+    <div style="background:#2a1212; color:#ffb4b4; padding:12px 14px;
+                border-radius:8px; margin-bottom:16px; font-size:13px;">
+        <p style="margin:0 0 8px;"><strong>This account is already signed in on:</strong></p>
+        <ul style="margin:0 0 8px 20px; padding:0;">
+            {% for s in active_sessions %}
+                <li>{{ s.device }} — last active {{ s.last_seen.strftime('%d %b, %H:%M') }}</li>
+            {% endfor %}
+        </ul>
+        <p style="margin:0;">Sign out on one of them, then try again.</p>
+    </div>
+{% endif %}
+
+
+
+    <div class="input-wrapper">
+
+        <span class="input-icon">✉</span>
+
+        <input
+            type="text"
+            id="identifier"
+            name="identifier"
+            class="form-control"
+            placeholder="Enter your email or username"
+            autocomplete="username"
+            required
+        >
+
+    </div>
+
+</div>
+
+
+                <div class="form-group">
+
+                    <label class="form-label" for="password">
+                        Password
+                    </label>
+
+                    <div class="input-wrapper">
+
+                        <span class="input-icon">●</span>
+
+                        <input
+                            type="password"
+                            id="password"
+                            name="password"
+                            class="form-control"
+                            placeholder="Enter your password"
+                            autocomplete="current-password"
+                            style="padding-right: 65px;"
+                            required
+                        >
+
+                        <button
+                            type="button"
+                            class="password-toggle"
+                            onclick="togglePassword()"
+                            id="passwordToggle"
+                        >
+                            Show
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <div class="form-options">
+
+                    <label class="remember">
+                        <input type="checkbox" name="remember">
+                        Remember me
+                    </label>
+
+                    <a href="#" class="forgot">
+                        Forgot password?
+                    </a>
+
+                </div>
+
+
+                <button type="submit" class="login-button">
+                    Sign In
+                </button>
+
+            </form>
+
+
+            <div class="divider">
+                OR
+            </div>
+
+
+            <div class="register-text">
+                Don't have an account?
+                <a href="{{ url_for('register') }}">Create one</a>
+            </div>
+
+
+            <div class="security-note">
+                🔒 Your account and payment information are protected
+                by KSS security systems.
+            </div>
+
+        </div>
+
+    </section>
+
+</div>
+
+
+<script>
+
+    function togglePassword() {
+
+        const password = document.getElementById("password");
+        const button = document.getElementById("passwordToggle");
+
+        if (password.type === "password") {
+
+            password.type = "text";
+            button.textContent = "Hide";
+
+        } else {
+
+            password.type = "password";
+            button.textContent = "Show";
+
+        }
+
+    }
+
+</script>
+
+</body>
+</html>

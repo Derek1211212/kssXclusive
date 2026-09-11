@@ -1,0 +1,1450 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
+
+<title>KSS — Watch Something Worth Watching</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+
+:root {
+    --bg: #050a0d;
+    --surface: #0b1519;
+    --surface2: #101f25;
+    --border: rgba(255,255,255,.08);
+    --border-strong: rgba(255,255,255,.2);
+    --text: #f5f8f9;
+    --muted: #8ea2a9;
+    --muted-dim: #5c6e74;
+    --accent: #16c6b4;
+    --accent2: #23ddca;
+    --accent-dim: #0f8f82;
+    --serif: "Fraunces", Georgia, serif;
+    --sans: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+    --page-pad: 5%;
+    --nav-h: 66px;
+    --hero-max-h: 72vh;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+html, body {
+    margin: 0;
+    padding: 0;
+    max-width: 100%;
+    overflow-x: hidden;
+}
+
+body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+}
+
+img,
+video {
+    max-width: 100%;
+    display: block;
+}
+
+a {
+    color: inherit;
+}
+
+/* ============ NAV ============ */
+
+nav {
+    position: fixed;
+    z-index: 100;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: var(--nav-h);
+    padding: 0 var(--page-pad);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    background: rgba(14,12,9,.82);
+    border-bottom: 1px solid var(--border);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+}
+
+.logo {
+    font-family: var(--serif);
+    color: var(--text);
+    text-decoration: none;
+    font-size: 24px;
+    font-weight: 600;
+    letter-spacing: .5px;
+    line-height: 1;
+    flex-shrink: 0;
+}
+
+.logo span {
+    color: var(--accent);
+}
+
+.nav-center {
+    display: flex;
+    gap: 4px;
+    min-width: 0;
+}
+
+.nav-center a,
+.nav-right a {
+    color: var(--muted);
+    text-decoration: none;
+    padding: 8px 14px;
+    font-size: 14px;
+    border-bottom: 1px solid transparent;
+    white-space: nowrap;
+}
+
+.nav-center a:hover {
+    color: var(--text);
+    border-bottom-color: var(--accent-dim);
+}
+
+.nav-right {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex-shrink: 0;
+}
+
+.nav-right .login:hover {
+    color: var(--text);
+}
+
+.register {
+    border: 1px solid var(--border-strong);
+    border-radius: 3px;
+    color: var(--text) !important;
+}
+
+.register:hover {
+    border-color: var(--accent-dim);
+    color: var(--accent) !important;
+}
+
+.nav-avatar {
+    width: 38px;
+    height: 38px;
+    position: relative;
+    display: grid;
+    place-items: center;
+    text-decoration: none;
+    flex-shrink: 0;
+    transition: transform .15s ease;
+}
+
+.nav-avatar-shape {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    fill: #e21f1f;
+    transition: fill .15s ease;
+}
+
+.nav-avatar-letter {
+    position: relative;
+    z-index: 1;
+    color: #000;
+    font-family: var(--serif);
+    font-weight: 700;
+    font-size: 14px;
+    /* nudge to sit visually centered inside the triangle's body, left of the tip */
+    transform: translateX(-3px);
+}
+
+@media (hover: hover) and (pointer: fine) {
+
+    .nav-avatar:hover {
+        transform: scale(1.06);
+    }
+
+    .nav-avatar:hover .nav-avatar-shape {
+        fill: #ff3b3b;
+    }
+
+}
+
+.nav-avatar:active,
+.nav-avatar:focus,
+.nav-avatar:focus:not(:focus-visible) {
+    transform: none;
+}
+
+.nav-avatar:active .nav-avatar-shape,
+.nav-avatar:focus .nav-avatar-shape,
+.nav-avatar:focus:not(:focus-visible) .nav-avatar-shape {
+    fill: #e21f1f;
+}
+
+@media (hover: hover) and (pointer: fine) {
+
+    .nav-avatar:hover {
+        background: var(--accent);
+        border-color: var(--accent);
+        transform: scale(1.06);
+    }
+
+}
+
+/* Keep the resting look on click/tap/focus, same as the play
+   button, so it never recolors or gets stuck on touch devices. */
+.nav-avatar:active,
+.nav-avatar:focus,
+.nav-avatar:focus:not(:focus-visible) {
+    background: rgba(5,10,13,.55);
+    border-color: rgba(255,255,255,.35);
+    transform: none;
+}
+
+@media (hover: hover) and (pointer: fine) {
+
+    .nav-avatar:hover {
+        background: #dc2626;
+        border-color: #dc2626;
+        transform: scale(1.06);
+    }
+
+}
+
+/* Keep the resting look on click/tap/focus, same as the play
+   button, so it never recolors or gets stuck on touch devices. */
+.nav-avatar:active,
+.nav-avatar:focus,
+.nav-avatar:focus:not(:focus-visible) {
+    background: rgba(220, 38, 38, .85);
+    border-color: rgba(255,255,255,.35);
+    transform: none;
+}
+
+/* ============ HERO ============ */
+
+.hero {
+    position: relative;
+    padding-top: var(--nav-h);
+    overflow: hidden;
+    border-bottom: 1px solid var(--border);
+}
+
+.hero-slides {
+    position: relative;
+}
+
+.hero-slide {
+    display: none;
+}
+
+.hero-slide.active {
+    display: block;
+}
+
+.hero-visual {
+    position: relative;
+    width: 100%;
+    max-width: calc(var(--hero-max-h) * 16 / 9); /* caps effective height via width */
+    aspect-ratio: 16 / 9;
+    margin: 0 auto;
+    min-height: 220px;
+    overflow: hidden;
+    background: var(--surface2);
+}
+
+.hero-bg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center 35%;
+    display: block;
+}
+
+.hero-play {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+}
+
+.hero-play-icon {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    background: rgba(5,10,13,.55);
+    border: 1px solid rgba(255,255,255,.35);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    transition: background .15s ease, transform .15s ease, border-color .15s ease;
+}
+
+.hero-play-icon svg {
+    width: 22px;
+    height: 22px;
+    margin-left: 3px;
+    fill: var(--text);
+}
+
+@media (hover: hover) and (pointer: fine) {
+
+    .hero-play:hover .hero-play-icon {
+        background: var(--accent);
+        border-color: var(--accent);
+        transform: scale(1.06);
+    }
+
+    .hero-play:hover .hero-play-icon svg {
+        fill: #1a1002;
+    }
+
+}
+
+/* Force the resting look on click/tap/focus so it never
+   flashes or gets stuck in the hover color on touch devices. */
+.hero-play:active .hero-play-icon,
+.hero-play:focus .hero-play-icon,
+.hero-play:focus:not(:focus-visible) .hero-play-icon {
+    background: rgba(5,10,13,.55);
+    border-color: rgba(255,255,255,.35);
+    transform: none;
+}
+
+.hero-play:active .hero-play-icon svg,
+.hero-play:focus .hero-play-icon svg,
+.hero-play:focus:not(:focus-visible) .hero-play-icon svg {
+    fill: var(--text);
+}
+
+@media (min-width: 700px) {
+
+    .hero-play-icon {
+        width: 76px;
+        height: 76px;
+    }
+
+    .hero-play-icon svg {
+        width: 26px;
+        height: 26px;
+    }
+
+}
+
+/* Soft bottom fade so the image melts into the text below. */
+.hero-visual::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 35%;
+    background: linear-gradient(to bottom, transparent, rgba(5,10,13,.55));
+    pointer-events: none;
+    z-index: 1;
+}
+
+.hero-content {
+    position: relative;
+    padding: 24px var(--page-pad) 28px;
+    background: var(--bg);
+    border-bottom: 1px solid var(--border);
+}
+
+.hero-eyebrow {
+    font-size: 12px;
+    color: var(--accent);
+    margin: 0 0 10px;
+}
+
+.hero-eyebrow em {
+    font-style: normal;
+    color: var(--muted);
+}
+
+.hero-content h1 {
+    font-family: var(--serif);
+    font-weight: 600;
+    font-size: clamp(24px, 5.5vw, 44px);
+    line-height: 1.1;
+    letter-spacing: -.5px;
+    margin: 0 0 18px;
+    max-width: 22ch;
+}
+
+.hero-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    justify-content: center;
+    padding: 12px 20px;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 600;
+    border-radius: 3px;
+    border: 1px solid transparent;
+    white-space: nowrap;
+}
+
+.btn-primary {
+    background: var(--accent);
+    color: #1a1002;
+}
+
+.btn-primary:hover {
+    background: var(--accent2);
+}
+
+.btn-secondary {
+    border-color: var(--border-strong);
+    color: var(--text);
+}
+
+.btn-secondary:hover {
+    border-color: var(--accent-dim);
+    color: var(--accent);
+}
+
+.hero-dots {
+    display: flex;
+    gap: 6px;
+    padding: 14px var(--page-pad);
+    background: var(--bg);
+}
+
+.hero-dot {
+    height: 3px;
+    flex: 1;
+    max-width: 40px;
+    border: none;
+    background: var(--border-strong);
+    cursor: pointer;
+    padding: 0;
+}
+
+.hero-dot.active {
+    background: var(--accent);
+}
+
+@media (min-width: 700px) {
+
+    .hero-content {
+        padding: 30px var(--page-pad) 36px;
+    }
+
+}
+
+@media (min-width: 1100px) {
+
+    .hero-content {
+        padding: 36px var(--page-pad) 44px;
+        max-width: 900px;
+    }
+
+    .hero-content h1 {
+        font-size: clamp(36px, 3vw, 56px);
+    }
+
+}
+
+/* ============ CONTENT ============ */
+
+.container {
+    width: min(1400px, calc(100% - (var(--page-pad) * 2)));
+    margin: 0 auto;
+}
+
+.section {
+    padding: 52px 0 0;
+}
+
+.section-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 24px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--border);
+    flex-wrap: wrap;
+}
+
+.section-head h2 {
+    font-family: var(--serif);
+    font-weight: 600;
+    margin: 0;
+    font-size: 22px;
+    letter-spacing: -.2px;
+}
+
+.section-head .sub {
+    color: var(--muted-dim);
+    font-size: 13px;
+    margin-top: 4px;
+}
+
+.section-head a {
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 13px;
+    white-space: nowrap;
+    border-bottom: 1px solid var(--border-strong);
+    padding-bottom: 2px;
+}
+
+.section-head a:hover {
+    color: var(--accent);
+    border-color: var(--accent-dim);
+}
+
+.section-head-actions {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.search-form {
+    display: flex;
+    align-items: center;
+    height: 34px;
+    border: 1px solid var(--border-strong);
+    border-radius: 999px;
+    background: var(--surface);
+    overflow: hidden;
+}
+
+.search-toggle {
+    width: 34px;
+    height: 34px;
+    flex-shrink: 0;
+    display: grid;
+    place-items: center;
+    background: none;
+    border: none;
+    padding: 0;
+    color: var(--muted);
+    cursor: pointer;
+}
+
+.search-toggle svg {
+    width: 16px;
+    height: 16px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+}
+
+.search-toggle:hover {
+    color: var(--accent);
+}
+
+.search-form.open {
+    border-color: var(--accent-dim);
+}
+
+.search-form.open .search-toggle {
+    color: var(--accent);
+}
+
+.search-input {
+    width: 0;
+    min-width: 0;
+    padding: 0;
+    border: none;
+    background: none;
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 13px;
+    opacity: 0;
+    transition: width .2s ease, opacity .15s ease, padding .2s ease;
+}
+
+.search-input:focus {
+    outline: none;
+}
+
+.search-input::placeholder {
+    color: var(--muted-dim);
+}
+
+.search-form.open .search-input {
+    width: 160px;
+    padding-right: 14px;
+    opacity: 1;
+}
+
+@media (min-width: 500px) {
+
+    .search-form.open .search-input {
+        width: 220px;
+    }
+
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 22px 20px;
+}
+
+.card {
+    min-width: 0;
+    text-decoration: none;
+    display: block;
+}
+
+.thumbnail {
+    position: relative;
+    aspect-ratio: 16/9;
+    overflow: hidden;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+}
+
+.thumbnail img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.duration {
+    position: absolute;
+    right: 7px;
+    bottom: 7px;
+    background: rgba(14,12,9,.85);
+    color: var(--text);
+    padding: 3px 6px;
+    font-size: 11px;
+    font-variant-numeric: tabular-nums;
+}
+
+.card-info {
+    padding: 12px 0 0;
+}
+
+.card-title {
+    font-family: var(--serif);
+    font-size: 15px;
+    font-weight: 600;
+    line-height: 1.3;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    word-break: break-word;
+}
+
+.card-channel {
+    color: var(--muted);
+    margin-top: 6px;
+    font-size: 12px;
+}
+
+.card-meta {
+    color: var(--muted-dim);
+    font-size: 11px;
+    margin-top: 4px;
+}
+
+.price-badge {
+    position: absolute;
+    left: 7px;
+    top: 7px;
+    padding: 3px 7px;
+    background: var(--bg);
+    border: 1px solid var(--accent-dim);
+    color: var(--accent);
+    font-size: 10px;
+    font-weight: 600;
+}
+
+.price-badge.is-free {
+    border-color: var(--border-strong);
+    color: var(--text);
+}
+
+.lock-badge {
+    position: absolute;
+    top: 7px;
+    right: 7px;
+    width: 26px;
+    height: 26px;
+    display: grid;
+    place-items: center;
+    background: rgba(14,12,9,.85);
+    border: 1px solid var(--border-strong);
+    color: var(--text);
+    font-size: 12px;
+}
+
+/* ============ CATEGORIES ============ */
+
+.categories {
+    display: flex;
+    gap: 26px;
+    overflow-x: auto;
+    padding-bottom: 4px;
+    scrollbar-width: thin;
+    -webkit-overflow-scrolling: touch;
+}
+
+.category {
+    white-space: nowrap;
+    padding: 0 0 12px;
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 14px;
+    border-bottom: 2px solid transparent;
+}
+
+.category:hover {
+    color: var(--text);
+    border-color: var(--accent-dim);
+}
+
+/* ============ CHANNELS ============ */
+
+.channel-list {
+    display: flex;
+    flex-direction: column;
+}
+
+.channel-row {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    padding: 16px 0;
+    border-top: 1px solid var(--border);
+    text-decoration: none;
+    color: var(--text);
+}
+
+.channel-row:last-child {
+    border-bottom: 1px solid var(--border);
+}
+
+.channel-rank {
+    font-family: var(--serif);
+    font-size: 22px;
+    color: var(--muted-dim);
+    width: 34px;
+    flex-shrink: 0;
+}
+
+.channel-logo {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    overflow: hidden;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    flex-shrink: 0;
+}
+
+.channel-logo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.channel-body {
+    min-width: 0;
+    flex: 1;
+}
+
+.channel-name {
+    font-weight: 600;
+    font-size: 15px;
+}
+
+.channel-meta {
+    color: var(--muted-dim);
+    font-size: 12px;
+    margin-top: 3px;
+}
+
+.channel-row .btn {
+    padding: 9px 16px;
+    font-size: 13px;
+    flex-shrink: 0;
+}
+
+footer {
+    margin-top: 70px;
+    padding: 32px var(--page-pad);
+    border-top: 1px solid var(--border);
+    color: var(--muted-dim);
+    font-size: 12px;
+}
+
+@media (max-width: 1000px) {
+
+    .grid {
+        grid-template-columns: repeat(3, minmax(0,1fr));
+    }
+
+    .nav-center {
+        display: none;
+    }
+
+}
+
+@media (max-width: 650px) {
+
+    :root {
+        --page-pad: 4%;
+    }
+
+    .nav-right .login {
+        display: none;
+    }
+
+    .grid {
+        grid-template-columns: repeat(1, minmax(0,1fr));
+        gap: 22px;
+    }
+
+    .channel-row .btn {
+        display: none;
+    }
+
+    .channel-rank {
+        display: none;
+    }
+
+    .hero-content {
+        padding: 20px var(--page-pad) 24px;
+    }
+
+    .card-title {
+        font-size: 16px;
+    }
+
+    .card-channel {
+        font-size: 13px;
+    }
+
+}
+
+
+
+
+@media (max-width: 350px) {
+    .hero-visual { aspect-ratio: auto; height: 220px; }
+}
+</style>
+
+</head>
+
+<body>
+
+<nav>
+
+<a
+    class="logo"
+    href="{{ url_for('index') }}"
+>
+    K<span>SS</span>
+</a>
+
+<div class="nav-center">
+
+<a href="{{ url_for('videos') }}">
+    Browse
+</a>
+
+<a href="#categories">
+    Categories
+</a>
+
+<a href="#channels">
+    Creators
+</a>
+
+</div>
+
+<div class="nav-right">
+
+{% if current_user %}
+
+<a
+
+    class="nav-avatar"
+    href="{{ url_for('dashboard') }}"
+    aria-label="Dashboard"
+    title="Dashboard"
+>
+<svg class="nav-avatar-shape" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+<path d="M30 8 C24 8 19 13 19 20 L19 80 C19 87 24 92 30 92 C33 92 36 91 39 89 L88 54 C93 50 93 42 88 38 L39 11 C36 9 33 8 30 8 Z"/>
+</svg>
+<span class="nav-avatar-letter">{{ (current_user.username or current_user.display_name or '?')[0]|upper }}</span>
+</a>
+
+{% else %}
+
+<a
+    class="login"
+    href="{{ url_for('login') }}"
+>
+    Log in
+</a>
+
+<a
+    class="btn register"
+    href="{{ url_for('register') }}"
+>
+    Join KSS
+</a>
+
+{% endif %}
+
+</div>
+
+</nav>
+
+
+{% if featured %}
+
+<section class="hero" id="hero">
+
+<div class="hero-slides">
+
+{% for video in featured %}
+
+<div
+    class="hero-slide{% if loop.first %} active{% endif %}"
+    data-slide="{{ loop.index0 }}"
+>
+
+<div class="hero-visual">
+
+{% if video.thumbnail_url %}
+
+<img
+    class="hero-bg"
+    src="{{ video.thumbnail_url }}"
+    alt="{{ video.title }}"
+    {% if loop.first %}loading="eager"{% else %}loading="lazy"{% endif %}
+>
+
+{% endif %}
+
+<a
+    class="hero-play"
+    href="{{ url_for(
+        'video_details',
+        slug=video.slug
+    ) }}"
+    aria-label="Play {{ video.title }}"
+>
+<span class="hero-play-icon">
+<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M8 5v14l11-7z"/></svg>
+</span>
+</a>
+
+</div>
+
+<div class="hero-content">
+
+<p class="hero-eyebrow">
+    Just uploaded · <em>{{ video.channel_name }}</em>
+</p>
+
+<h1>
+    {{ video.title }}
+</h1>
+
+<div class="hero-actions">
+
+<a
+    class="btn btn-primary"
+    href="{{ url_for(
+        'video_details',
+        slug=video.slug
+    ) }}"
+>
+    Watch now
+</a>
+
+<a
+    class="btn btn-secondary"
+    href="{{ url_for(
+        'channel',
+        slug=video.channel_slug
+    ) }}"
+>
+    {{ video.channel_name }}
+</a>
+
+</div>
+
+</div>
+
+</div>
+
+{% endfor %}
+
+</div>
+
+{% if featured|length > 1 %}
+
+<div class="hero-dots">
+
+{% for video in featured %}
+
+<button
+    class="hero-dot{% if loop.first %} active{% endif %}"
+    type="button"
+    data-goto="{{ loop.index0 }}"
+    aria-label="Go to slide {{ loop.index }}"
+></button>
+
+{% endfor %}
+
+</div>
+
+{% endif %}
+
+</section>
+
+{% endif %}
+
+
+<main class="container">
+
+
+<section class="section">
+
+<div class="section-head">
+
+<div>
+
+<h2>
+    New releases
+</h2>
+
+<div class="sub">
+    The newest uploads on KSS, first
+</div>
+
+</div>
+
+<div class="section-head-actions">
+
+<form
+    class="search-form"
+    action="{{ url_for('videos') }}"
+    method="get"
+    role="search"
+>
+
+<button
+    type="button"
+    class="search-toggle"
+    aria-label="Search videos"
+    aria-expanded="false"
+>
+<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+</button>
+
+<input
+    type="search"
+    name="q"
+    class="search-input"
+    placeholder="Search videos…"
+    aria-label="Search videos"
+    autocomplete="off"
+>
+
+</form>
+
+<a href="{{ url_for('videos') }}">
+    View all
+</a>
+
+</div>
+
+</div>
+
+<div class="grid">
+
+{% for video in featured %}
+
+<a
+    class="card"
+    href="{{ url_for(
+        'video_details',
+        slug=video.slug
+    ) }}"
+>
+
+<div class="thumbnail">
+
+{% if video.thumbnail_url %}
+
+<img
+    src="{{ video.thumbnail_url }}"
+    alt="{{ video.title }}"
+    loading="lazy"
+>
+
+{% endif %}
+
+{% if video.is_locked %}
+<span class="lock-badge" aria-label="Locked video" title="Rent or buy to watch">&#128274;</span>
+{% endif %}
+
+{% if video.is_free %}
+
+<span class="price-badge is-free">
+    Free
+</span>
+
+{% elif video.purchase_enabled and not video.is_purchased %}
+
+<span class="price-badge">
+    {{ video.currency or 'GHS' }}
+    {{ "%.0f"|format(video.purchase_price|float) }}
+</span>
+
+{% endif %}
+
+{% if video.duration_seconds %}
+
+<span class="duration">
+    {{ video.duration_seconds|duration }}
+</span>
+
+{% endif %}
+
+</div>
+
+<div class="card-info">
+
+<div class="card-title">
+    {{ video.title }}
+</div>
+
+<div class="card-channel">
+    {{ video.channel_name }}
+</div>
+
+<div class="card-meta">
+    {{ video.total_views|views }} views
+</div>
+
+</div>
+
+</a>
+
+{% endfor %}
+
+</div>
+
+</section>
+
+
+<section
+    class="section"
+    id="categories"
+>
+
+<div class="section-head">
+
+
+</div>
+
+<div class="categories">
+
+{% for category in categories %}
+
+<a
+    class="category"
+    href="{{ url_for(
+        'videos',
+        category=category.category_id
+    ) }}"
+>
+    {{ category.category_name }}
+</a>
+
+{% endfor %}
+
+</div>
+
+</section>
+
+
+<section
+    class="section"
+    id="channels"
+>
+
+<div class="section-head">
+
+<h2>
+    Popular creators
+</h2>
+
+</div>
+
+<div class="channel-list">
+
+{% for channel in popular_channels %}
+
+<a
+    class="channel-row"
+    href="{{ url_for(
+        'channel',
+        slug=channel.slug
+    ) }}"
+>
+
+<div class="channel-rank">
+    {{ "%02d"|format(loop.index) }}
+</div>
+
+<div class="channel-logo">
+
+{% if channel.channel_logo %}
+
+<img
+    src="{{ channel.channel_logo }}"
+    alt="{{ channel.channel_name }}"
+    loading="lazy"
+>
+
+{% endif %}
+
+</div>
+
+<div class="channel-body">
+
+<div class="channel-name">
+    {{ channel.channel_name }}
+</div>
+
+<div class="channel-meta">
+    {{ channel.subscriber_count|views }} subscribers · {{ channel.total_videos|views }} videos
+</div>
+
+</div>
+
+<span class="btn btn-secondary">
+    Visit
+</span>
+
+</a>
+
+{% endfor %}
+
+</div>
+
+</section>
+
+</main>
+
+
+<footer>
+
+© {{ current_year or 2026 }} KSS.
+Premium video content from independent creators.
+
+</footer>
+
+
+<script>
+(function () {
+    var slides = document.querySelectorAll('.hero-slide');
+    var dots = document.querySelectorAll('.hero-dot');
+    if (slides.length <= 1) return;
+
+    var current = 0;
+    var slideTimer = null;      // interval that advances slides
+    var resumeTimer = null;     // timeout that restarts after a pause
+    var INTERVAL = 6000;        // how often to advance
+    var PAUSE_RESUME = 4000;    // how long a pause lasts before auto-resuming
+
+    function goTo(index) {
+        slides[current].classList.remove('active');
+        if (dots[current]) dots[current].classList.remove('active');
+        current = (index + slides.length) % slides.length;
+        slides[current].classList.add('active');
+        if (dots[current]) dots[current].classList.add('active');
+    }
+
+    function next() {
+        goTo(current + 1);
+    }
+
+    function clearTimers() {
+        if (slideTimer) {
+            clearInterval(slideTimer);
+            slideTimer = null;
+        }
+        if (resumeTimer) {
+            clearTimeout(resumeTimer);
+            resumeTimer = null;
+        }
+    }
+
+    // Fully stopped — no auto-advance, no pending resume.
+    function stop() {
+        clearTimers();
+    }
+
+    // Pause auto-advance, but ALWAYS schedule a restart so it can
+    // never get stuck off. Used for hover and touch interactions.
+    function pauseBriefly(ms) {
+        clearTimers();
+        resumeTimer = setTimeout(start, ms);
+    }
+
+    // Running — advance slides on the interval.
+    function start() {
+        clearTimers();
+        slideTimer = setInterval(next, INTERVAL);
+    }
+
+    // ---- Dots ----
+    dots.forEach(function (dot) {
+        dot.addEventListener('click', function () {
+            goTo(parseInt(dot.dataset.goto, 10));
+            start();
+        });
+    });
+
+    // ---- Hero interactions ----
+    var heroEl = document.getElementById('hero');
+
+    // Only real hover-capable pointers (mouse/trackpad) get the
+    // hover-to-pause behavior. Touchscreens fire synthetic mouseenter/
+    // mouseleave events after a tap (e.g. tapping "Watch now"), which
+    // would otherwise pause the carousel just from touching hero content.
+    var supportsHover = window.matchMedia &&
+        window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+
+    if (heroEl) {
+        if (supportsHover) {
+            // Desktop: hovering pauses, but auto-resumes after PAUSE_RESUME ms
+            // even if the cursor never leaves. mouseleave resumes immediately.
+            heroEl.addEventListener('mouseenter', function () {
+                pauseBriefly(PAUSE_RESUME);
+            });
+            heroEl.addEventListener('mouseleave', function () {
+                start();
+            });
+        }
+
+        // Mobile: do NOT pause on touchstart — the user might be about to
+        // swipe. If they do swipe, we handle it on touchend. If they don't,
+        // the carousel keeps running untouched.
+        var touchStartX = 0;
+        var touchStartY = 0;
+        var isSwiping = false;
+
+        heroEl.addEventListener('touchstart', function (e) {
+            var t = e.touches[0];
+            touchStartX = t.clientX;
+            touchStartY = t.clientY;
+            isSwiping = false;
+        }, { passive: true });
+
+        heroEl.addEventListener('touchmove', function (e) {
+            var t = e.touches[0];
+            var dx = Math.abs(t.clientX - touchStartX);
+            var dy = Math.abs(t.clientY - touchStartY);
+            // Only treat as a horizontal swipe if the gesture is more
+            // horizontal than vertical — otherwise let the page scroll.
+            if (dx > 10 && dx > dy) {
+                isSwiping = true;
+            }
+        }, { passive: true });
+
+        heroEl.addEventListener('touchend', function (e) {
+            if (!isSwiping) {
+                // A plain tap — do nothing. Slider keeps running.
+                return;
+            }
+            var dx = e.changedTouches[0].clientX - touchStartX;
+            if (Math.abs(dx) > 40) {
+                dx < 0 ? next() : goTo(current - 1);
+            }
+            // Give the user a moment to read the slide they swiped to,
+            // then resume automatically.
+            pauseBriefly(PAUSE_RESUME);
+        }, { passive: true });
+    }
+
+    // ---- Kick off ----
+    start();
+
+    // ---- Search toggle ----
+    var searchForm = document.querySelector('.search-form');
+    var searchToggle = document.querySelector('.search-toggle');
+    var searchInput = document.querySelector('.search-input');
+
+    if (searchForm && searchToggle && searchInput) {
+        searchToggle.addEventListener('click', function () {
+            var isOpen = searchForm.classList.toggle('open');
+            searchToggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+            if (isOpen) {
+                searchInput.focus();
+            }
+        });
+
+        searchInput.addEventListener('blur', function () {
+            if (!searchInput.value) {
+                searchForm.classList.remove('open');
+                searchToggle.setAttribute('aria-expanded', 'false');
+            }
+        });
+    }
+
+    // Safety net: if the page loses focus (tab switch, screenshot tool, etc.)
+    // pause briefly and auto-resume. Prevents a stuck carousel.
+    document.addEventListener('visibilitychange', function () {
+        if (document.hidden) {
+            stop();
+        } else {
+            start();
+        }
+    });
+})();
+</script>
+
+</body>
+</html>

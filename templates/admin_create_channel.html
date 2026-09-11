@@ -1,0 +1,2383 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>
+        {% if channel %}
+            Edit Channel | KSS Admin
+        {% else %}
+            Create Channel | KSS Admin
+        {% endif %}
+    </title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet"
+    >
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --bg: #0b0f19;
+            --sidebar: #101522;
+            --card: #121827;
+            --card-hover: #171e2e;
+            --input: #0d1320;
+            --border: rgba(255,255,255,.07);
+
+            --text: #f5f7fb;
+            --muted: #8b95a7;
+
+            --primary: #ff3158;
+            --primary-dark: #d91f43;
+
+            --green: #27d17f;
+            --blue: #4d9fff;
+            --danger: #ff5c6c;
+        }
+
+        body {
+            font-family: "Inter", sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        button,
+        input,
+        textarea,
+        select {
+            font-family: inherit;
+        }
+
+        /* =========================
+           SIDEBAR
+        ========================= */
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+
+            width: 250px;
+
+            background: var(--sidebar);
+            border-right: 1px solid var(--border);
+
+            padding: 24px 16px;
+
+            z-index: 1000;
+
+            transition: transform .25s ease;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 11px;
+
+            padding: 0 10px 28px;
+        }
+
+        .brand-icon {
+            width: 38px;
+            height: 38px;
+
+            border-radius: 11px;
+
+            background: var(--primary);
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            font-weight: 800;
+            font-size: 19px;
+
+            box-shadow: 0 8px 25px rgba(255,49,88,.22);
+        }
+
+        .brand-name {
+            font-size: 21px;
+            font-weight: 800;
+            letter-spacing: -.5px;
+        }
+
+        .nav-label {
+            color: #5e6879;
+
+            font-size: 10px;
+            font-weight: 700;
+
+            letter-spacing: 1.2px;
+
+            padding: 0 12px;
+            margin: 12px 0 8px;
+
+            text-transform: uppercase;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 13px;
+
+            padding: 12px 13px;
+            margin-bottom: 4px;
+
+            border-radius: 10px;
+
+            color: var(--muted);
+
+            font-size: 13px;
+            font-weight: 600;
+
+            transition: .2s;
+        }
+
+        .nav-item:hover {
+            color: var(--text);
+            background: rgba(255,255,255,.045);
+        }
+
+        .nav-item.active {
+            color: #fff;
+            background: rgba(255,49,88,.12);
+        }
+
+        .nav-item.active .nav-icon {
+            color: var(--primary);
+        }
+
+        .nav-icon {
+            width: 19px;
+            text-align: center;
+            font-size: 16px;
+        }
+
+        /* =========================
+           MAIN
+        ========================= */
+
+        .main {
+            margin-left: 250px;
+            min-height: 100vh;
+        }
+
+        .topbar {
+            height: 76px;
+
+            border-bottom: 1px solid var(--border);
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            padding: 0 32px;
+
+            background: rgba(11,15,25,.92);
+
+            backdrop-filter: blur(14px);
+
+            position: sticky;
+            top: 0;
+
+            z-index: 900;
+        }
+
+        .topbar-left {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .mobile-menu {
+            display: none;
+
+            border: 0;
+            background: transparent;
+
+            color: white;
+
+            font-size: 22px;
+
+            cursor: pointer;
+        }
+
+        .page-title {
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .topbar-right {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+        }
+
+        .admin-profile {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .admin-avatar {
+            width: 35px;
+            height: 35px;
+
+            border-radius: 50%;
+
+            background: linear-gradient(
+                135deg,
+                #ff3158,
+                #8d2040
+            );
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            font-size: 12px;
+            font-weight: 800;
+        }
+
+        .admin-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .admin-name {
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .admin-role {
+            font-size: 10px;
+            color: var(--muted);
+            margin-top: 2px;
+        }
+
+        /* =========================
+           CONTENT
+        ========================= */
+
+        .content {
+            padding: 32px;
+            max-width: 1400px;
+        }
+
+        .page-heading {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+
+            gap: 20px;
+
+            margin-bottom: 27px;
+        }
+
+        .heading-title {
+            font-size: 27px;
+            font-weight: 800;
+
+            letter-spacing: -.7px;
+        }
+
+        .heading-subtitle {
+            color: var(--muted);
+
+            font-size: 13px;
+
+            margin-top: 7px;
+        }
+
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+
+            border: 1px solid var(--border);
+
+            background: transparent;
+
+            color: #aeb7c7;
+
+            padding: 10px 14px;
+
+            border-radius: 8px;
+
+            font-size: 11px;
+            font-weight: 700;
+
+            transition: .2s;
+        }
+
+        .back-btn:hover {
+            background: rgba(255,255,255,.04);
+            color: white;
+        }
+
+        /* =========================
+           LAYOUT
+        ========================= */
+
+        .form-layout {
+            display: grid;
+
+            grid-template-columns:
+                minmax(0, 1fr)
+                360px;
+
+            gap: 20px;
+
+            align-items: start;
+        }
+
+        .card {
+            background: var(--card);
+
+            border: 1px solid var(--border);
+
+            border-radius: 14px;
+
+            overflow: hidden;
+        }
+
+        .card-header {
+            padding: 20px 22px;
+
+            border-bottom: 1px solid var(--border);
+        }
+
+        .card-title {
+            font-size: 14px;
+            font-weight: 800;
+        }
+
+        .card-description {
+            color: var(--muted);
+
+            font-size: 11px;
+
+            margin-top: 5px;
+
+            line-height: 1.6;
+        }
+
+        .card-body {
+            padding: 22px;
+        }
+
+        /* =========================
+           FORM
+        ========================= */
+
+        .form-group {
+            margin-bottom: 21px;
+        }
+
+        .form-group:last-child {
+            margin-bottom: 0;
+        }
+
+        .form-label {
+            display: block;
+
+            font-size: 11px;
+            font-weight: 700;
+
+            color: #dce1e9;
+
+            margin-bottom: 8px;
+        }
+
+        .required {
+            color: var(--primary);
+        }
+
+        .form-help {
+            color: #687386;
+
+            font-size: 10px;
+
+            margin-top: 6px;
+
+            line-height: 1.5;
+        }
+
+        .form-input,
+        .form-select,
+        .form-textarea {
+
+            width: 100%;
+
+            background: var(--input);
+
+            color: var(--text);
+
+            border: 1px solid var(--border);
+
+            border-radius: 8px;
+
+            outline: none;
+
+            font-size: 12px;
+
+            transition: .2s;
+        }
+
+        .form-input,
+        .form-select {
+            height: 43px;
+
+            padding: 0 13px;
+        }
+
+        .form-textarea {
+            min-height: 140px;
+
+            resize: vertical;
+
+            padding: 12px 13px;
+
+            line-height: 1.6;
+        }
+
+        .form-input:focus,
+        .form-select:focus,
+        .form-textarea:focus {
+            border-color: rgba(255,49,88,.5);
+
+            box-shadow:
+                0 0 0 3px rgba(255,49,88,.06);
+        }
+
+        .form-input::placeholder,
+        .form-textarea::placeholder {
+            color: #566071;
+        }
+
+        .slug-wrapper {
+            display: flex;
+            align-items: center;
+
+            background: var(--input);
+
+            border: 1px solid var(--border);
+
+            border-radius: 8px;
+
+            overflow: hidden;
+        }
+
+        .slug-prefix {
+            padding-left: 13px;
+
+            color: #687386;
+
+            font-size: 12px;
+        }
+
+        .slug-input {
+            border: 0 !important;
+
+            background: transparent !important;
+
+            box-shadow: none !important;
+
+            border-radius: 0 !important;
+        }
+
+        /* =========================
+           OWNER
+        ========================= */
+
+        .owner-option {
+            display: flex;
+
+            align-items: center;
+
+            gap: 10px;
+
+            margin-top: 8px;
+        }
+
+        .owner-note {
+            color: #687386;
+
+            font-size: 10px;
+        }
+
+        /* =========================
+           SWITCHES
+        ========================= */
+
+        .settings-list {
+            display: flex;
+            flex-direction: column;
+
+            gap: 15px;
+        }
+
+        .setting-row {
+            display: flex;
+
+            align-items: center;
+            justify-content: space-between;
+
+            gap: 15px;
+
+            padding: 14px;
+
+            background: var(--input);
+
+            border: 1px solid var(--border);
+
+            border-radius: 10px;
+        }
+
+        .setting-info {
+            min-width: 0;
+        }
+
+        .setting-title {
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .setting-description {
+            color: #687386;
+
+            font-size: 9px;
+
+            line-height: 1.5;
+
+            margin-top: 3px;
+        }
+
+        .switch {
+            position: relative;
+
+            width: 39px;
+            height: 22px;
+
+            flex-shrink: 0;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+
+            cursor: pointer;
+
+            inset: 0;
+
+            background: #252d3c;
+
+            border-radius: 30px;
+
+            transition: .2s;
+        }
+
+        .slider::before {
+            content: "";
+
+            position: absolute;
+
+            width: 16px;
+            height: 16px;
+
+            left: 3px;
+            top: 3px;
+
+            background: #9ca5b4;
+
+            border-radius: 50%;
+
+            transition: .2s;
+        }
+
+        .switch input:checked + .slider {
+            background: var(--primary);
+        }
+
+        .switch input:checked + .slider::before {
+            transform: translateX(17px);
+
+            background: white;
+        }
+
+        /* =========================
+           IMAGE UPLOAD
+        ========================= */
+
+        .upload-box {
+            border: 1px dashed rgba(255,255,255,.12);
+
+            background: #0d1320;
+
+            border-radius: 11px;
+
+            padding: 16px;
+
+            transition: .2s;
+        }
+
+        .upload-box:hover {
+            border-color: rgba(255,49,88,.35);
+        }
+
+        .upload-label {
+            display: flex;
+
+            align-items: center;
+
+            gap: 13px;
+
+            cursor: pointer;
+        }
+
+        .upload-icon {
+            width: 43px;
+            height: 43px;
+
+            border-radius: 10px;
+
+            background: rgba(255,49,88,.09);
+
+            color: var(--primary);
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            font-size: 18px;
+
+            flex-shrink: 0;
+        }
+
+        .upload-title {
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .upload-description {
+            color: #687386;
+
+            font-size: 9px;
+
+            margin-top: 3px;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .image-preview {
+            width: 100%;
+
+            margin-top: 13px;
+
+            border-radius: 9px;
+
+            overflow: hidden;
+
+            display: none;
+
+            background: #080c14;
+
+            border: 1px solid var(--border);
+        }
+
+        .image-preview img {
+            display: block;
+
+            width: 100%;
+
+            object-fit: contain;
+        }
+
+        .logo-preview img {
+            height: 130px;
+        }
+
+        .banner-preview img {
+            height: 130px;
+        }
+
+        .existing-image {
+            margin-top: 13px;
+
+            border-radius: 9px;
+
+            overflow: hidden;
+
+            border: 1px solid var(--border);
+
+            background: #080c14;
+        }
+
+        .existing-image img {
+            display: block;
+
+            width: 100%;
+
+            object-fit: contain;
+        }
+
+        .existing-logo img {
+            height: 130px;
+        }
+
+        .existing-banner img {
+            height: 130px;
+        }
+
+        .current-label {
+            color: #687386;
+
+            font-size: 9px;
+
+            padding: 8px 10px;
+
+            border-bottom: 1px solid var(--border);
+        }
+
+        /* =========================
+           PREVIEW
+        ========================= */
+
+        .preview-card {
+            position: sticky;
+            top: 98px;
+        }
+
+        .channel-preview-banner {
+            height: 135px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #252d3c,
+                    #141a27
+                );
+
+            background-size: cover;
+            background-position: center;
+
+            position: relative;
+        }
+
+        .preview-overlay {
+            position: absolute;
+            inset: 0;
+
+            background:
+                linear-gradient(
+                    to bottom,
+                    transparent 35%,
+                    rgba(0,0,0,.65)
+                );
+        }
+
+        .channel-preview-content {
+            padding: 0 20px 20px;
+
+            position: relative;
+        }
+
+        .preview-logo {
+            width: 74px;
+            height: 74px;
+
+            margin-top: -37px;
+
+            border-radius: 50%;
+
+            border: 4px solid var(--card);
+
+            background: #202838;
+
+            object-fit: cover;
+
+            display: block;
+        }
+
+        .preview-placeholder {
+            width: 74px;
+            height: 74px;
+
+            margin-top: -37px;
+
+            border-radius: 50%;
+
+            border: 4px solid var(--card);
+
+            background: linear-gradient(
+                135deg,
+                #30394a,
+                #171e2d
+            );
+
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
+
+            font-size: 25px;
+
+            font-weight: 800;
+        }
+
+        .preview-name {
+            font-size: 18px;
+
+            font-weight: 800;
+
+            margin-top: 13px;
+
+            letter-spacing: -.3px;
+
+            word-break: break-word;
+        }
+
+        .preview-handle {
+            color: #687386;
+
+            font-size: 10px;
+
+            margin-top: 4px;
+        }
+
+        .preview-description {
+            color: #a1aaba;
+
+            font-size: 10px;
+
+            line-height: 1.6;
+
+            margin-top: 14px;
+
+            display: -webkit-box;
+
+            -webkit-line-clamp: 4;
+            -webkit-box-orient: vertical;
+
+            overflow: hidden;
+        }
+
+        .preview-stats {
+            display: flex;
+
+            gap: 17px;
+
+            margin-top: 15px;
+
+            padding-top: 14px;
+
+            border-top: 1px solid var(--border);
+        }
+
+        .preview-stat-value {
+            font-size: 11px;
+
+            font-weight: 700;
+        }
+
+        .preview-stat-label {
+            color: #687386;
+
+            font-size: 8px;
+
+            margin-top: 3px;
+        }
+
+        /* =========================
+           FORM ACTIONS
+        ========================= */
+
+        .form-actions {
+            display: flex;
+
+            align-items: center;
+            justify-content: space-between;
+
+            gap: 10px;
+
+            margin-top: 20px;
+        }
+
+        .action-left,
+        .action-right {
+            display: flex;
+
+            align-items: center;
+
+            gap: 9px;
+        }
+
+        .btn {
+            display: inline-flex;
+
+            align-items: center;
+            justify-content: center;
+
+            gap: 8px;
+
+            height: 42px;
+
+            padding: 0 17px;
+
+            border-radius: 8px;
+
+            font-size: 11px;
+
+            font-weight: 700;
+
+            cursor: pointer;
+
+            transition: .2s;
+        }
+
+        .btn-secondary {
+            color: #b4bdcb;
+
+            border: 1px solid var(--border);
+
+            background: transparent;
+        }
+
+        .btn-secondary:hover {
+            color: white;
+
+            background: rgba(255,255,255,.04);
+        }
+
+        .btn-primary {
+            border: 1px solid var(--primary);
+
+            background: var(--primary);
+
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+
+            border-color: var(--primary-dark);
+
+            transform: translateY(-1px);
+        }
+
+        /* =========================
+           ALERTS
+        ========================= */
+
+        .alert {
+            padding: 12px 14px;
+
+            border-radius: 8px;
+
+            margin-bottom: 20px;
+
+            font-size: 11px;
+
+            border: 1px solid;
+        }
+
+        .alert-error {
+            color: #ff9aa6;
+
+            background: rgba(255,92,108,.07);
+
+            border-color: rgba(255,92,108,.16);
+        }
+
+        .alert-success {
+            color: #78e9af;
+
+            background: rgba(39,209,127,.07);
+
+            border-color: rgba(39,209,127,.16);
+        }
+
+        /* =========================
+           RESPONSIVE
+        ========================= */
+
+        @media (max-width: 1050px) {
+
+            .form-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .preview-card {
+                position: static;
+            }
+
+        }
+
+        @media (max-width: 800px) {
+
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+
+            .main {
+                margin-left: 0;
+            }
+
+            .mobile-menu {
+                display: block;
+            }
+
+            .content {
+                padding: 22px 17px;
+            }
+
+            .topbar {
+                padding: 0 17px;
+            }
+
+            .admin-info {
+                display: none;
+            }
+
+        }
+
+        @media (max-width: 600px) {
+
+            .page-heading {
+                flex-direction: column;
+            }
+
+            .back-btn {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .card-body,
+            .card-header {
+                padding: 17px;
+            }
+
+            .form-actions {
+                flex-direction: column-reverse;
+                align-items: stretch;
+            }
+
+            .action-left,
+            .action-right {
+                width: 100%;
+            }
+
+            .action-left .btn,
+            .action-right .btn {
+                width: 100%;
+            }
+
+        }
+
+    </style>
+</head>
+
+<body>
+
+
+<!-- =========================
+     SIDEBAR
+========================= -->
+
+<aside class="sidebar" id="sidebar">
+
+    <div class="brand">
+
+        <div class="brand-icon">
+            K
+        </div>
+
+        <div class="brand-name">
+            KSS
+        </div>
+
+    </div>
+
+
+    <div class="nav-label">
+        Overview
+    </div>
+
+    <a
+        href="{{ url_for('admin_dashboard') }}"
+        class="nav-item"
+    >
+        <span class="nav-icon">▦</span>
+        Dashboard
+    </a>
+
+
+    <div class="nav-label">
+        Management
+    </div>
+
+    <a
+        href="{{ url_for('admin_users') }}"
+        class="nav-item"
+    >
+        <span class="nav-icon">♙</span>
+        Users
+    </a>
+
+    <a
+        href="{{ url_for('admin_channels') }}"
+        class="nav-item active"
+    >
+        <span class="nav-icon">◉</span>
+        Channels
+    </a>
+
+    <a
+        href="{{ url_for('admin_videos') }}"
+        class="nav-item"
+    >
+        <span class="nav-icon">▶</span>
+        Videos
+    </a>
+
+    <a
+        href="{{ url_for('admin_payments') }}"
+        class="nav-item"
+    >
+        <span class="nav-icon">₵</span>
+        Payments
+    </a>
+
+
+    <div class="nav-label">
+        Insights
+    </div>
+
+    <a
+        href="{{ url_for('admin_analytics') }}"
+        class="nav-item"
+    >
+        <span class="nav-icon">⌁</span>
+        Analytics
+    </a>
+
+
+    <div class="nav-label">
+        System
+    </div>
+
+    <a href="#" class="nav-item">
+        <span class="nav-icon">⚙</span>
+        Settings
+    </a>
+
+    <a href="#" class="nav-item">
+        <span class="nav-icon">?</span>
+        Help
+    </a>
+
+</aside>
+
+
+<!-- =========================
+     MAIN
+========================= -->
+
+<main class="main">
+
+
+    <!-- TOPBAR -->
+
+    <header class="topbar">
+
+        <div class="topbar-left">
+
+            <button
+                class="mobile-menu"
+                onclick="toggleSidebar()"
+            >
+                ☰
+            </button>
+
+            <div class="page-title">
+
+                {% if channel %}
+                    Edit Channel
+                {% else %}
+                    Create Channel
+                {% endif %}
+
+            </div>
+
+        </div>
+
+
+        <div class="topbar-right">
+
+            <div class="admin-profile">
+
+                <div class="admin-avatar">
+
+                    {% if current_user %}
+                        {{ current_user.full_name[:1]|upper }}
+                    {% else %}
+                        A
+                    {% endif %}
+
+                </div>
+
+                <div class="admin-info">
+
+                    <div class="admin-name">
+
+                        {% if current_user %}
+                            {{ current_user.full_name }}
+                        {% else %}
+                            Administrator
+                        {% endif %}
+
+                    </div>
+
+                    <div class="admin-role">
+                        Administrator
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </header>
+
+
+    <!-- CONTENT -->
+
+    <section class="content">
+
+
+        <!-- PAGE HEADING -->
+
+        <div class="page-heading">
+
+            <div>
+
+                <div class="heading-title">
+
+                    {% if channel %}
+                        Edit Channel
+                    {% else %}
+                        Create Channel
+                    {% endif %}
+
+                </div>
+
+                <div class="heading-subtitle">
+
+                    {% if channel %}
+                        Update the channel's identity, ownership and visibility.
+                    {% else %}
+                        Create a new channel for the KSS platform.
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+
+            <a
+                href="{{ url_for('admin_channels') }}"
+                class="back-btn"
+            >
+                ← Back to Channels
+            </a>
+
+        </div>
+
+
+        <!-- FLASH MESSAGES -->
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+
+            {% if messages %}
+
+                {% for category, message in messages %}
+
+                    <div
+                        class="alert
+                        {% if category == 'success' %}
+                            alert-success
+                        {% else %}
+                            alert-error
+                        {% endif %}"
+                    >
+                        {{ message }}
+                    </div>
+
+                {% endfor %}
+
+            {% endif %}
+
+        {% endwith %}
+
+
+        <!-- FORM -->
+
+        <form
+            method="POST"
+            enctype="multipart/form-data"
+            id="channelForm"
+        >
+
+            <div class="form-layout">
+
+
+                <!-- =========================
+                     LEFT COLUMN
+                ========================= -->
+
+                <div>
+
+
+                    <!-- BASIC INFORMATION -->
+
+                    <div class="card">
+
+                        <div class="card-header">
+
+                            <div class="card-title">
+                                Basic Information
+                            </div>
+
+                            <div class="card-description">
+                                Set the channel's name, URL and public description.
+                            </div>
+
+                        </div>
+
+
+                        <div class="card-body">
+
+
+                            <!-- CHANNEL NAME -->
+
+                            <div class="form-group">
+
+                                <label class="form-label">
+                                    Channel Name
+                                    <span class="required">*</span>
+                                </label>
+
+                                <input
+                                    type="text"
+                                    name="channel_name"
+                                    id="channelName"
+                                    class="form-input"
+                                    placeholder="e.g. KSS Entertainment"
+                                    maxlength="150"
+                                    required
+                                    value="{{ channel.channel_name if channel else '' }}"
+                                >
+
+                                <div class="form-help">
+                                    This is the name viewers will see on the channel.
+                                </div>
+
+                            </div>
+
+
+                            <!-- SLUG -->
+
+                            <div class="form-group">
+
+                                <label class="form-label">
+                                    Channel URL
+                                    <span class="required">*</span>
+                                </label>
+
+                                <div class="slug-wrapper">
+
+                                    <span class="slug-prefix">
+                                        /channel/
+                                    </span>
+
+                                    <input
+                                        type="text"
+                                        name="slug"
+                                        id="channelSlug"
+                                        class="form-input slug-input"
+                                        placeholder="kss-entertainment"
+                                        maxlength="180"
+                                        required
+                                        value="{{ channel.slug if channel else '' }}"
+                                    >
+
+                                </div>
+
+                                <div class="form-help">
+                                    Use lowercase letters, numbers and hyphens.
+                                </div>
+
+                            </div>
+
+
+                            <!-- DESCRIPTION -->
+
+                            <div class="form-group">
+
+                                <label class="form-label">
+                                    Channel Description
+                                </label>
+
+                                <textarea
+                                    name="description"
+                                    id="channelDescription"
+                                    class="form-textarea"
+                                    placeholder="Tell viewers what this channel is about..."
+                                    maxlength="5000"
+                                >{{ channel.description if channel else '' }}</textarea>
+
+                                <div class="form-help">
+                                    A clear description helps viewers understand the channel and its content.
+                                </div>
+
+                            </div>
+
+
+                            <!-- OWNER -->
+
+                            <div class="form-group">
+
+                                <label class="form-label">
+                                    Channel Owner
+                                    <span class="required">*</span>
+                                </label>
+
+                                <select
+                                    name="owner_user_id"
+                                    class="form-select"
+                                    required
+                                >
+
+                                    <option value="">
+                                        Select channel owner
+                                    </option>
+
+                                    {% for user in users %}
+
+                                        <option
+                                            value="{{ user.user_id }}"
+                                            {% if channel and channel.owner_user_id == user.user_id %}
+                                                selected
+                                            {% endif %}
+                                        >
+                                            {{ user.full_name }}
+                                            — {{ user.email }}
+                                        </option>
+
+                                    {% endfor %}
+
+                                </select>
+
+                                <div class="form-help">
+                                    The owner will be associated with this channel and may manage it when creator functionality is enabled.
+                                </div>
+
+                            </div>
+
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- BRANDING -->
+
+                    <div
+                        class="card"
+                        style="margin-top:20px;"
+                    >
+
+                        <div class="card-header">
+
+                            <div class="card-title">
+                                Channel Branding
+                            </div>
+
+                            <div class="card-description">
+                                Add a profile logo and banner to give the channel its identity.
+                            </div>
+
+                        </div>
+
+
+                        <div class="card-body">
+
+
+                            <!-- LOGO -->
+
+                            <div class="form-group">
+
+                                <label class="form-label">
+                                    Channel Logo
+                                </label>
+
+                                <div class="upload-box">
+
+                                    <label
+                                        for="logoInput"
+                                        class="upload-label"
+                                    >
+
+                                        <div class="upload-icon">
+                                            ◉
+                                        </div>
+
+                                        <div>
+
+                                            <div class="upload-title">
+                                                Choose channel logo
+                                            </div>
+
+                                            <div class="upload-description">
+                                                Recommended: square image, PNG or JPG.
+                                            </div>
+
+                                        </div>
+
+                                    </label>
+
+                                    <input
+                                        type="file"
+                                        id="logoInput"
+                                        name="channel_logo"
+                                        class="file-input"
+                                        accept="image/png,image/jpeg,image/webp"
+                                    >
+
+
+                                    {% if channel and channel.channel_logo %}
+
+                                        <div class="current-label">
+                                            Current logo
+                                        </div>
+
+                                        <div class="existing-image existing-logo">
+
+                                            <img
+                                                src="{{ channel.channel_logo }}"
+                                                alt="Current channel logo"
+                                            >
+
+                                        </div>
+
+                                    {% endif %}
+
+
+                                    <div
+                                        class="image-preview logo-preview"
+                                        id="logoPreview"
+                                    >
+
+                                        <img
+                                            id="logoPreviewImage"
+                                            alt="Logo preview"
+                                        >
+
+                                    </div>
+
+                                </div>
+
+                                <div class="form-help">
+                                    If no logo is uploaded, KSS will use the channel's first letter as a fallback.
+                                </div>
+
+                            </div>
+
+
+                            <!-- BANNER -->
+
+                            <div class="form-group">
+
+                                <label class="form-label">
+                                    Channel Banner
+                                </label>
+
+                                <div class="upload-box">
+
+                                    <label
+                                        for="bannerInput"
+                                        class="upload-label"
+                                    >
+
+                                        <div class="upload-icon">
+                                            ▰
+                                        </div>
+
+                                        <div>
+
+                                            <div class="upload-title">
+                                                Choose channel banner
+                                            </div>
+
+                                            <div class="upload-description">
+                                                Recommended: wide 16:5 or similar banner image.
+                                            </div>
+
+                                        </div>
+
+                                    </label>
+
+                                    <input
+                                        type="file"
+                                        id="bannerInput"
+                                        name="channel_banner"
+                                        class="file-input"
+                                        accept="image/png,image/jpeg,image/webp"
+                                    >
+
+
+                                    {% if channel and channel.channel_banner %}
+
+                                        <div class="current-label">
+                                            Current banner
+                                        </div>
+
+                                        <div class="existing-image existing-banner">
+
+                                            <img
+                                                src="{{ channel.channel_banner }}"
+                                                alt="Current channel banner"
+                                            >
+
+                                        </div>
+
+                                    {% endif %}
+
+
+                                    <div
+                                        class="image-preview banner-preview"
+                                        id="bannerPreview"
+                                    >
+
+                                        <img
+                                            id="bannerPreviewImage"
+                                            alt="Banner preview"
+                                        >
+
+                                    </div>
+
+                                </div>
+
+                                <div class="form-help">
+                                    A banner appears at the top of the public channel page.
+                                </div>
+
+                            </div>
+
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- SETTINGS -->
+
+                    <div
+                        class="card"
+                        style="margin-top:20px;"
+                    >
+
+                        <div class="card-header">
+
+                            <div class="card-title">
+                                Channel Settings
+                            </div>
+
+                            <div class="card-description">
+                                Control the channel's status and verification.
+                            </div>
+
+                        </div>
+
+
+                        <div class="card-body">
+
+                            <div class="settings-list">
+
+
+                                <!-- ACTIVE -->
+
+                                <div class="setting-row">
+
+                                    <div class="setting-info">
+
+                                        <div class="setting-title">
+                                            Active Channel
+                                        </div>
+
+                                        <div class="setting-description">
+                                            Active channels can be displayed publicly on KSS.
+                                        </div>
+
+                                    </div>
+
+                                    <label class="switch">
+
+                                        <input
+                                            type="checkbox"
+                                            name="is_active"
+                                            value="1"
+                                            {% if not channel or channel.is_active %}
+                                                checked
+                                            {% endif %}
+                                        >
+
+                                        <span class="slider"></span>
+
+                                    </label>
+
+                                </div>
+
+
+                                <!-- VERIFIED -->
+
+                                <div class="setting-row">
+
+                                    <div class="setting-info">
+
+                                        <div class="setting-title">
+                                            Verified Channel
+                                        </div>
+
+                                        <div class="setting-description">
+                                            Show the verified badge on the channel.
+                                        </div>
+
+                                    </div>
+
+                                    <label class="switch">
+
+                                        <input
+                                            type="checkbox"
+                                            name="is_verified"
+                                            value="1"
+                                            {% if channel and channel.is_verified %}
+                                                checked
+                                            {% endif %}
+                                        >
+
+                                        <span class="slider"></span>
+
+                                    </label>
+
+                                </div>
+
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- ACTIONS -->
+
+                    <div class="form-actions">
+
+                        <div class="action-left">
+
+                            <a
+                                href="{{ url_for('admin_channels') }}"
+                                class="btn btn-secondary"
+                            >
+                                Cancel
+                            </a>
+
+                        </div>
+
+
+                        <div class="action-right">
+
+                            <button
+                                type="submit"
+                                class="btn btn-primary"
+                            >
+
+                                {% if channel %}
+                                    Save Changes
+                                {% else %}
+                                    Create Channel
+                                {% endif %}
+
+                            </button>
+
+                        </div>
+
+                    </div>
+
+
+                </div>
+
+
+                <!-- =========================
+                     RIGHT COLUMN
+                ========================= -->
+
+                <div>
+
+                    <div class="card preview-card">
+
+                        <div class="card-header">
+
+                            <div class="card-title">
+                                Channel Preview
+                            </div>
+
+                            <div class="card-description">
+                                This is an approximate preview of how the channel may appear to viewers.
+                            </div>
+
+                        </div>
+
+
+                        <div class="channel-preview-banner" id="previewBanner">
+
+                            <div class="preview-overlay"></div>
+
+                        </div>
+
+
+                        <div class="channel-preview-content">
+
+
+                            {% if channel and channel.channel_logo %}
+
+                                <img
+                                    src="{{ channel.channel_logo }}"
+                                    class="preview-logo"
+                                    id="previewLogo"
+                                    alt="Channel logo"
+                                >
+
+                            {% else %}
+
+                                <div
+                                    class="preview-placeholder"
+                                    id="previewLogoPlaceholder"
+                                >
+                                    <span id="previewInitial">
+                                        {% if channel %}
+                                            {{ channel.channel_name[:1]|upper }}
+                                        {% else %}
+                                            K
+                                        {% endif %}
+                                    </span>
+                                </div>
+
+                            {% endif %}
+
+
+                            <div
+                                class="preview-name"
+                                id="previewName"
+                            >
+                                {% if channel %}
+                                    {{ channel.channel_name }}
+                                {% else %}
+                                    Channel Name
+                                {% endif %}
+                            </div>
+
+
+                            <div
+                                class="preview-handle"
+                                id="previewHandle"
+                            >
+                                {% if channel %}
+                                    @{{ channel.slug }}
+                                {% else %}
+                                    @channel-name
+                                {% endif %}
+                            </div>
+
+
+                            <div
+                                class="preview-description"
+                                id="previewDescription"
+                            >
+                                {% if channel and channel.description %}
+                                    {{ channel.description }}
+                                {% else %}
+                                    Your channel description will appear here.
+                                {% endif %}
+                            </div>
+
+
+                            <div class="preview-stats">
+
+                                <div>
+
+                                    <div class="preview-stat-value">
+                                        0
+                                    </div>
+
+                                    <div class="preview-stat-label">
+                                        Subscribers
+                                    </div>
+
+                                </div>
+
+
+                                <div>
+
+                                    <div class="preview-stat-value">
+                                        0
+                                    </div>
+
+                                    <div class="preview-stat-label">
+                                        Videos
+                                    </div>
+
+                                </div>
+
+
+                                <div>
+
+                                    <div class="preview-stat-value">
+                                        0
+                                    </div>
+
+                                    <div class="preview-stat-label">
+                                        Views
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+            </div>
+
+        </form>
+
+    </section>
+
+</main>
+
+
+<script>
+
+    /* =========================
+       SIDEBAR
+    ========================= */
+
+    function toggleSidebar() {
+
+        document
+            .getElementById("sidebar")
+            .classList
+            .toggle("open");
+
+    }
+
+
+    /* =========================
+       ELEMENTS
+    ========================= */
+
+    const channelName =
+        document.getElementById("channelName");
+
+    const channelSlug =
+        document.getElementById("channelSlug");
+
+    const channelDescription =
+        document.getElementById("channelDescription");
+
+    const previewName =
+        document.getElementById("previewName");
+
+    const previewHandle =
+        document.getElementById("previewHandle");
+
+    const previewDescription =
+        document.getElementById("previewDescription");
+
+    const previewBanner =
+        document.getElementById("previewBanner");
+
+    const previewInitial =
+        document.getElementById("previewInitial");
+
+
+    /* =========================
+       SLUG GENERATION
+    ========================= */
+
+    let slugManuallyEdited = false;
+
+    channelSlug.addEventListener(
+        "input",
+        function() {
+
+            slugManuallyEdited = true;
+
+            this.value = slugify(this.value);
+
+            updatePreview();
+
+        }
+    );
+
+
+    channelName.addEventListener(
+        "input",
+        function() {
+
+            if (!slugManuallyEdited) {
+
+                channelSlug.value =
+                    slugify(this.value);
+
+            }
+
+            updatePreview();
+
+        }
+    );
+
+
+    function slugify(value) {
+
+        return value
+            .toString()
+            .toLowerCase()
+            .trim()
+            .replace(/[^a-z0-9\s-]/g, "")
+            .replace(/\s+/g, "-")
+            .replace(/-+/g, "-")
+            .substring(0, 180);
+
+    }
+
+
+    /* =========================
+       LIVE PREVIEW
+    ========================= */
+
+    function updatePreview() {
+
+        const name =
+            channelName.value.trim();
+
+        const slug =
+            channelSlug.value.trim();
+
+        const description =
+            channelDescription.value.trim();
+
+
+        previewName.textContent =
+            name || "Channel Name";
+
+
+        previewHandle.textContent =
+            slug
+                ? "@" + slug
+                : "@channel-name";
+
+
+        previewDescription.textContent =
+            description ||
+            "Your channel description will appear here.";
+
+
+        if (previewInitial) {
+
+            previewInitial.textContent =
+                name
+                    ? name.charAt(0).toUpperCase()
+                    : "K";
+
+        }
+
+    }
+
+
+    channelDescription.addEventListener(
+        "input",
+        updatePreview
+    );
+
+
+    /* =========================
+       LOGO PREVIEW
+    ========================= */
+
+    const logoInput =
+        document.getElementById("logoInput");
+
+    const logoPreview =
+        document.getElementById("logoPreview");
+
+    const logoPreviewImage =
+        document.getElementById("logoPreviewImage");
+
+
+    logoInput.addEventListener(
+        "change",
+        function() {
+
+            const file = this.files[0];
+
+            if (!file) {
+                return;
+            }
+
+            if (!file.type.startsWith("image/")) {
+
+                alert(
+                    "Please select an image file."
+                );
+
+                this.value = "";
+
+                return;
+            }
+
+
+            const reader =
+                new FileReader();
+
+
+            reader.onload = function(event) {
+
+                logoPreviewImage.src =
+                    event.target.result;
+
+                logoPreview.style.display =
+                    "block";
+
+
+                const existingPreviewLogo =
+                    document.getElementById(
+                        "previewLogo"
+                    );
+
+                const placeholder =
+                    document.getElementById(
+                        "previewLogoPlaceholder"
+                    );
+
+
+                if (existingPreviewLogo) {
+
+                    existingPreviewLogo.src =
+                        event.target.result;
+
+                } else if (placeholder) {
+
+                    const img =
+                        document.createElement("img");
+
+                    img.id = "previewLogo";
+
+                    img.className =
+                        "preview-logo";
+
+                    img.alt =
+                        "Channel logo";
+
+                    img.src =
+                        event.target.result;
+
+                    placeholder.replaceWith(img);
+
+                }
+
+            };
+
+            reader.readAsDataURL(file);
+
+        }
+    );
+
+
+    /* =========================
+       BANNER PREVIEW
+    ========================= */
+
+    const bannerInput =
+        document.getElementById("bannerInput");
+
+    const bannerPreview =
+        document.getElementById("bannerPreview");
+
+    const bannerPreviewImage =
+        document.getElementById(
+            "bannerPreviewImage"
+        );
+
+
+    bannerInput.addEventListener(
+        "change",
+        function() {
+
+            const file = this.files[0];
+
+            if (!file) {
+                return;
+            }
+
+            if (!file.type.startsWith("image/")) {
+
+                alert(
+                    "Please select an image file."
+                );
+
+                this.value = "";
+
+                return;
+            }
+
+
+            const reader =
+                new FileReader();
+
+
+            reader.onload = function(event) {
+
+                bannerPreviewImage.src =
+                    event.target.result;
+
+                bannerPreview.style.display =
+                    "block";
+
+
+                previewBanner.style.backgroundImage =
+                    `url("${event.target.result}")`;
+
+            };
+
+
+            reader.readAsDataURL(file);
+
+        }
+    );
+
+
+    /* =========================
+       FORM VALIDATION
+    ========================= */
+
+    document
+        .getElementById("channelForm")
+        .addEventListener(
+            "submit",
+            function(event) {
+
+                const name =
+                    channelName.value.trim();
+
+                const slug =
+                    channelSlug.value.trim();
+
+
+                if (!name) {
+
+                    event.preventDefault();
+
+                    alert(
+                        "Please enter a channel name."
+                    );
+
+                    channelName.focus();
+
+                    return;
+                }
+
+
+                if (!slug) {
+
+                    event.preventDefault();
+
+                    alert(
+                        "Please enter a channel URL."
+                    );
+
+                    channelSlug.focus();
+
+                    return;
+                }
+
+
+                const validSlug =
+                    /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+
+
+                if (!validSlug.test(slug)) {
+
+                    event.preventDefault();
+
+                    alert(
+                        "The channel URL can only contain lowercase letters, numbers and hyphens."
+                    );
+
+                    channelSlug.focus();
+
+                    return;
+                }
+
+            }
+        );
+
+
+    /* =========================
+       INITIAL PREVIEW
+    ========================= */
+
+    updatePreview();
+
+</script>
+
+</body>
+</html>
+```

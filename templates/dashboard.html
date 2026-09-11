@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
+
+<title>
+    My Dashboard — KSS
+</title>
+
+<style>
+
+:root {
+    --bg:#050a0d;
+    --surface:#0b1519;
+    --surface2:#102027;
+    --border:rgba(255,255,255,.08);
+    --text:#f4f8f9;
+    --muted:#91a5ac;
+    --accent:#16c6b4;
+}
+
+* {
+    box-sizing:border-box;
+}
+
+body {
+    margin:0;
+    background:var(--bg);
+    color:var(--text);
+    font-family:
+        Inter,
+        system-ui,
+        sans-serif;
+}
+
+nav {
+    height:70px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:0 5%;
+    border-bottom:1px solid var(--border);
+}
+
+.logo {
+    color:var(--accent);
+    text-decoration:none;
+    font-size:26px;
+    font-weight:950;
+}
+
+.nav-links {
+    display:flex;
+    gap:10px;
+}
+
+.nav-links a {
+    color:var(--muted);
+    text-decoration:none;
+    padding:9px 12px;
+}
+
+.container {
+    width:min(1350px,90%);
+    margin:45px auto 80px;
+}
+
+.welcome h1 {
+    margin:0;
+    font-size:40px;
+    letter-spacing:-1.5px;
+}
+
+.welcome p {
+    color:var(--muted);
+    margin-top:7px;
+}
+
+.stats {
+    display:grid;
+    grid-template-columns:
+        repeat(4,minmax(0,1fr));
+    gap:14px;
+    margin:30px 0 50px;
+}
+
+.stat {
+    padding:20px;
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:14px;
+}
+
+.stat-number {
+    font-size:28px;
+    font-weight:900;
+}
+
+.stat-label {
+    color:var(--muted);
+    font-size:12px;
+    margin-top:5px;
+}
+
+.section {
+    margin-top:45px;
+}
+
+.section-head {
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:18px;
+}
+
+.section-head h2 {
+    margin:0;
+    font-size:21px;
+}
+
+.section-head a {
+    color:var(--accent);
+    text-decoration:none;
+    font-size:12px;
+}
+
+.grid {
+    display:grid;
+    grid-template-columns:
+        repeat(4,minmax(0,1fr));
+    gap:18px;
+}
+
+.card {
+    text-decoration:none;
+}
+
+.thumb {
+    aspect-ratio:16/9;
+    border-radius:10px;
+    overflow:hidden;
+    background:var(--surface2);
+    position:relative;
+}
+
+.thumb img {
+    width:100%;
+    height:100%;
+    object-fit:cover;
+}
+
+.progress {
+    position:absolute;
+    bottom:0;
+    left:0;
+    height:3px;
+    background:var(--accent);
+}
+
+.title {
+    font-weight:800;
+    line-height:1.4;
+    margin-top:9px;
+}
+
+.meta {
+    color:var(--muted);
+    font-size:11px;
+    margin-top:5px;
+}
+
+.row-list {
+    display:grid;
+    gap:10px;
+}
+
+.row {
+    display:flex;
+    align-items:center;
+    gap:15px;
+    padding:15px;
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:12px;
+}
+
+.row-image {
+    width:100px;
+    aspect-ratio:16/9;
+    border-radius:7px;
+    overflow:hidden;
+    background:var(--surface2);
+    flex-shrink:0;
+}
+
+.row-image img {
+    width:100%;
+    height:100%;
+    object-fit:cover;
+}
+
+.row-content {
+    flex:1;
+}
+
+.row-title {
+    font-weight:800;
+}
+
+.row-meta {
+    color:var(--muted);
+    font-size:11px;
+    margin-top:5px;
+}
+
+.row-action {
+    text-decoration:none;
+    color:var(--accent);
+    font-size:12px;
+    font-weight:800;
+}
+
+.expiry {
+    color:#e9c46a;
+    font-size:11px;
+}
+
+.empty {
+    padding:30px;
+    border:1px dashed var(--border);
+    border-radius:12px;
+    color:var(--muted);
+}
+
+@media(max-width:900px) {
+
+    .stats {
+        grid-template-columns:
+            repeat(2,1fr);
+    }
+
+    .grid {
+        grid-template-columns:
+            repeat(2,1fr);
+    }
+
+}
+
+@media(max-width:600px) {
+
+    .container {
+        width:94%;
+    }
+
+    .nav-links a:nth-child(1) {
+        display:none;
+    }
+
+    .welcome h1 {
+        font-size:31px;
+    }
+
+    .grid {
+        gap:12px;
+    }
+
+    .row {
+        align-items:flex-start;
+    }
+
+    .row-action {
+        display:none;
+    }
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<nav>
+
+<a
+    class="logo"
+    href="{{ url_for('index') }}"
+>
+    KSS
+</a>
+
+<div class="nav-links">
+
+<a href="{{ url_for('videos') }}">
+    Browse
+</a>
+
+<a href="{{ url_for('profile') }}">
+    Profile
+</a>
+
+<a href="{{ url_for('logout') }}">
+    Logout
+</a>
+
+</div>
+
+</nav>
+
+
+<main class="container">
+
+<section class="welcome">
+
+<h1>
+    Welcome back{% if current_user %}
+    , {{ current_user.full_name or current_user.username }}
+    {% endif %}
+</h1>
+
+<p>
+    Your videos, rentals, subscriptions and watch history.
+</p>
+
+</section>
+
+
+<div class="stats">
+
+<div class="stat">
+
+<div class="stat-number">
+    {{ purchases|length }}
+</div>
+
+<div class="stat-label">
+    Purchased videos
+</div>
+
+</div>
+
+
+<div class="stat">
+
+<div class="stat-number">
+    {{ rentals|length }}
+</div>
+
+<div class="stat-label">
+    Active rentals
+</div>
+
+</div>
+
+
+<div class="stat">
+
+<div class="stat-number">
+    {{ subscriptions|length }}
+</div>
+
+<div class="stat-label">
+    Active subscriptions
+</div>
+
+</div>
+
+
+<div class="stat">
+
+<div class="stat-number">
+    {{ history|length }}
+</div>
+
+<div class="stat-label">
+    Recently watched
+</div>
+
+</div>
+
+</div>
+
+
+<section class="section">
+
+<div class="section-head">
+
+<h2>
+    Continue watching
+</h2>
+
+<a href="{{ url_for('history') }}">
+    View history →
+</a>
+
+</div>
+
+
+{% if history %}
+
+<div class="grid">
+
+{% for item in history %}
+
+<a
+    class="card"
+    href="{{ url_for(
+        'video_details',
+        slug=item.slug
+    ) }}"
+>
+
+<div class="thumb">
+
+{% if item.thumbnail_url %}
+
+<img
+    src="{{ item.thumbnail_url }}"
+    alt="{{ item.title }}"
+    loading="lazy"
+>
+
+{% endif %}
+
+<div
+    class="progress"
+    style="
+        width:{{ item.completion_percentage|float }}%;
+    "
+></div>
+
+</div>
+
+<div class="title">
+    {{ item.title }}
+</div>
+
+<div class="meta">
+
+{{ item.completion_percentage|round|int }}% watched
+
+</div>
+
+</a>
+
+{% endfor %}
+
+</div>
+
+{% else %}
+
+<div class="empty">
+    You have not watched any videos yet.
+</div>
+
+{% endif %}
+
+</section>
+
+
+<section class="section">
+
+<div class="section-head">
+
+<h2>
+    My purchases
+</h2>
+
+<a href="{{ url_for('purchases') }}">
+    View all →
+</a>
+
+</div>
+
+
+{% if purchases %}
+
+<div class="grid">
+
+{% for item in purchases[:8] %}
+
+<a
+    class="card"
+    href="{{ url_for(
+        'watch',
+        slug=item.slug
+    ) }}"
+>
+
+<div class="thumb">
+
+{% if item.thumbnail_url %}
+
+<img
+    src="{{ item.thumbnail_url }}"
+    alt="{{ item.title }}"
+    loading="lazy"
+>
+
+{% endif %}
+
+</div>
+
+<div class="title">
+    {{ item.title }}
+</div>
+
+<div class="meta">
+    Purchased ·
+    {{ item.currency }}
+    {{ "%.2f"|format(item.amount|float) }}
+</div>
+
+</a>
+
+{% endfor %}
+
+</div>
+
+{% else %}
+
+<div class="empty">
+
+You haven't purchased any videos yet.
+
+<a
+    href="{{ url_for('videos') }}"
+    style="color:#16c6b4;"
+>
+    Browse videos
+</a>
+
+</div>
+
+{% endif %}
+
+</section>
+
+
+<section class="section">
+
+<div class="section-head">
+
+<h2>
+    Active rentals
+</h2>
+
+</div>
+
+
+{% if rentals %}
+
+<div class="row-list">
+
+{% for item in rentals %}
+
+<div class="row">
+
+<div class="row-image">
+
+{% if item.thumbnail_url %}
+
+<img
+    src="{{ item.thumbnail_url }}"
+    alt=""
+>
+
+{% endif %}
+
+</div>
+
+<div class="row-content">
+
+<div class="row-title">
+    {{ item.title }}
+</div>
+
+<div class="row-meta">
+    {{ item.channel_name }}
+</div>
+
+<div class="expiry">
+    Expires:
+    {{ item.expires_at }}
+</div>
+
+</div>
+
+<a
+    class="row-action"
+    href="{{ url_for(
+        'watch',
+        slug=item.slug
+    ) }}"
+>
+    Watch
+</a>
+
+</div>
+
+{% endfor %}
+
+</div>
+
+{% else %}
+
+<div class="empty">
+    You have no active rentals.
+</div>
+
+{% endif %}
+
+</section>
+
+
+<section class="section">
+
+<div class="section-head">
+
+<h2>
+    Channel subscriptions
+</h2>
+
+</div>
+
+
+{% if subscriptions %}
+
+<div class="row-list">
+
+{% for item in subscriptions %}
+
+<div class="row">
+
+<div class="row-image">
+
+{% if item.channel_logo %}
+
+<img
+    src="{{ item.channel_logo }}"
+    alt=""
+>
+
+{% endif %}
+
+</div>
+
+<div class="row-content">
+
+<div class="row-title">
+    {{ item.channel_name }}
+</div>
+
+<div class="row-meta">
+    {{ item.currency }}
+    {{ "%.2f"|format(item.amount|float) }}
+</div>
+
+<div class="expiry">
+    Expires:
+    {{ item.expires_at }}
+</div>
+
+</div>
+
+<a
+    class="row-action"
+    href="{{ url_for(
+        'channel',
+        slug=item.slug
+    ) }}"
+>
+    Visit
+</a>
+
+</div>
+
+{% endfor %}
+
+</div>
+
+{% else %}
+
+<div class="empty">
+    You are not subscribed to any channels.
+</div>
+
+{% endif %}
+
+</section>
+
+</main>
+
+</body>
+</html>

@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>KSS — Secure Payment</title>
+
+    <style>
+        :root {
+            --bg: #071014;
+            --surface: #0d191e;
+            --surface2: #122229;
+            --border: rgba(255,255,255,.08);
+            --text: #f4f8f9;
+            --muted: #9aadb4;
+            --accent: #16c6b4;
+            --accent-dark: #0c9e91;
+            --danger: #ff6b6b;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background:
+                radial-gradient(
+                    circle at top right,
+                    rgba(22,198,180,.10),
+                    transparent 35%
+                ),
+                var(--bg);
+            color: var(--text);
+            font-family:
+                Inter,
+                system-ui,
+                -apple-system,
+                BlinkMacSystemFont,
+                "Segoe UI",
+                sans-serif;
+            min-height: 100vh;
+        }
+
+        nav {
+            height: 70px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 5%;
+            background: rgba(7,16,20,.85);
+            backdrop-filter: blur(16px);
+        }
+
+        .logo {
+            color: var(--accent);
+            text-decoration: none;
+            font-size: 25px;
+            font-weight: 900;
+            letter-spacing: -1px;
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .nav-link {
+            color: var(--muted);
+            text-decoration: none;
+            padding: 10px 14px;
+            border-radius: 10px;
+        }
+
+        .nav-link:hover {
+            background: rgba(255,255,255,.05);
+            color: white;
+        }
+
+        .container {
+            width: min(1100px, 92%);
+            margin: 60px auto;
+        }
+
+        .payment-layout {
+            display: grid;
+            grid-template-columns: 1.1fr .9fr;
+            gap: 30px;
+        }
+
+        .panel {
+            background: rgba(13,25,30,.92);
+            border: 1px solid var(--border);
+            border-radius: 22px;
+            padding: 30px;
+            box-shadow: 0 25px 80px rgba(0,0,0,.25);
+        }
+
+        .eyebrow {
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-size: 12px;
+            font-weight: 800;
+            margin-bottom: 12px;
+        }
+
+        h1 {
+            margin: 0 0 12px;
+            font-size: clamp(28px, 4vw, 44px);
+            line-height: 1.05;
+        }
+
+        .subtitle {
+            color: var(--muted);
+            line-height: 1.7;
+        }
+
+        .media {
+            aspect-ratio: 16 / 9;
+            border-radius: 16px;
+            overflow: hidden;
+            background: #05090b;
+            margin: 25px 0;
+        }
+
+        .media img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .product-title {
+            font-size: 22px;
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
+
+        .channel {
+            color: var(--muted);
+        }
+
+        .price-box {
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            padding: 25px;
+            margin-bottom: 20px;
+        }
+
+        .price-label {
+            color: var(--muted);
+            font-size: 13px;
+            margin-bottom: 8px;
+        }
+
+        .price {
+            font-size: 38px;
+            font-weight: 900;
+        }
+
+        .details {
+            margin-top: 20px;
+            display: grid;
+            gap: 12px;
+        }
+
+        .detail {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .detail span:first-child {
+            color: var(--muted);
+        }
+
+        .detail span:last-child {
+            font-weight: 700;
+        }
+
+        .pay-btn {
+            width: 100%;
+            border: 0;
+            background: var(--accent);
+            color: #04100f;
+            font-weight: 900;
+            font-size: 16px;
+            padding: 16px 20px;
+            border-radius: 13px;
+            cursor: pointer;
+            transition: .2s;
+        }
+
+        .pay-btn:hover {
+            background: #23dbc8;
+            transform: translateY(-1px);
+        }
+
+        .pay-btn:disabled {
+            opacity: .55;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .secure {
+            text-align: center;
+            color: var(--muted);
+            font-size: 12px;
+            margin-top: 15px;
+        }
+
+        .error {
+            display: none;
+            background: rgba(255,107,107,.1);
+            border: 1px solid rgba(255,107,107,.25);
+            color: #ff9a9a;
+            padding: 13px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            color: var(--muted);
+            margin-top: 15px;
+        }
+
+        @media (max-width: 800px) {
+            .payment-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .container {
+                margin: 30px auto;
+            }
+
+            nav {
+                padding: 0 4%;
+            }
+
+            .nav-link {
+                display: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<nav>
+    <a href="{{ url_for('index') }}" class="logo">KSS</a>
+
+    <div class="nav-right">
+        <a href="{{ url_for('dashboard') }}" class="nav-link">
+            My Dashboard
+        </a>
+
+        <a href="{{ url_for('logout') }}" class="nav-link">
+            Logout
+        </a>
+    </div>
+</nav>
+
+<main class="container">
+
+    <div class="payment-layout">
+
+        <section class="panel">
+
+            <div class="eyebrow">
+                Secure checkout
+            </div>
+
+            {% if payment_type == "video_purchase" %}
+
+                <h1>Buy this video</h1>
+
+                <p class="subtitle">
+                    Purchase this video once and keep permanent access
+                    to it in your KSS library.
+                </p>
+
+                <div class="media">
+                    {% if video.thumbnail_url %}
+                        <img
+                            src="{{ video.thumbnail_url }}"
+                            alt="{{ video.title }}"
+                        >
+                    {% endif %}
+                </div>
+
+                <div class="product-title">
+                    {{ video.title }}
+                </div>
+
+                <div class="channel">
+                    {{ video.channel_name }}
+                </div>
+
+            {% elif payment_type == "video_rental" %}
+
+                <h1>Rent this video</h1>
+
+                <p class="subtitle">
+                    Watch this video during your rental period.
+                </p>
+
+                <div class="media">
+                    {% if video.thumbnail_url %}
+                        <img
+                            src="{{ video.thumbnail_url }}"
+                            alt="{{ video.title }}"
+                        >
+                    {% endif %}
+                </div>
+
+                <div class="product-title">
+                    {{ video.title }}
+                </div>
+
+                <div class="channel">
+                    {{ video.channel_name }}
+                </div>
+
+            {% else %}
+
+                <h1>Subscribe to {{ channel.channel_name }}</h1>
+
+                <p class="subtitle">
+                    Support this creator and unlock videos that require
+                    an active channel subscription.
+                </p>
+
+                <div class="media">
+                    {% if channel.channel_banner %}
+                        <img
+                            src="{{ channel.channel_banner }}"
+                            alt="{{ channel.channel_name }}"
+                        >
+                    {% endif %}
+                </div>
+
+                <div class="product-title">
+                    {{ channel.channel_name }}
+                </div>
+
+            {% endif %}
+
+        </section>
+
+
+        <section class="panel">
+
+            <div class="eyebrow">
+                Order summary
+            </div>
+
+            <div class="price-box">
+
+                <div class="price-label">
+                    Amount to pay
+                </div>
+
+                <div class="price">
+                    {{ currency }}
+                    {{ "%.2f"|format(amount|float) }}
+                </div>
+
+            </div>
+
+            <div class="details">
+
+                {% if payment_type == "video_purchase" %}
+
+                    <div class="detail">
+                        <span>Type</span>
+                        <span>Permanent purchase</span>
+                    </div>
+
+                    <div class="detail">
+                        <span>Access</span>
+                        <span>Permanent</span>
+                    </div>
+
+                {% elif payment_type == "video_rental" %}
+
+                    <div class="detail">
+                        <span>Type</span>
+                        <span>Rental</span>
+                    </div>
+
+                    <div class="detail">
+                        <span>Rental period</span>
+                        <span>
+                            {{ rental_duration_hours }} hours
+                        </span>
+                    </div>
+
+                {% else %}
+
+                    <div class="detail">
+                        <span>Type</span>
+                        <span>Channel subscription</span>
+                    </div>
+
+                    <div class="detail">
+                        <span>Duration</span>
+                        <span>
+                            {{ subscription_days }} days
+                        </span>
+                    </div>
+
+                {% endif %}
+
+                <div class="detail">
+                    <span>Payment provider</span>
+                    <span>Paystack</span>
+                </div>
+
+            </div>
+
+            <div
+                class="error"
+                id="paymentError"
+            ></div>
+
+            <button
+                type="button"
+                class="pay-btn"
+                id="payButton"
+                onclick="startPayment()"
+            >
+                Pay {{ currency }}
+                {{ "%.2f"|format(amount|float) }}
+            </button>
+
+            <div
+                class="loading"
+                id="loading"
+            >
+                Preparing secure checkout...
+            </div>
+
+            <div class="secure">
+                🔒 Your payment is securely processed by Paystack.
+            </div>
+
+        </section>
+
+    </div>
+
+</main>
+
+<script>
+    const paymentType = "{{ payment_type }}";
+
+    {% if video %}
+        const videoId = {{ video.video_id }};
+    {% else %}
+        const videoId = null;
+    {% endif %}
+
+    {% if channel %}
+        const channelId = {{ channel.channel_id }};
+    {% else %}
+        const channelId = null;
+    {% endif %}
+
+
+    async function startPayment() {
+
+        const button = document.getElementById("payButton");
+        const loading = document.getElementById("loading");
+        const errorBox = document.getElementById("paymentError");
+
+        button.disabled = true;
+        loading.style.display = "block";
+        errorBox.style.display = "none";
+
+        const payload = {
+            payment_type: paymentType
+        };
+
+        if (videoId) {
+            payload.video_id = videoId;
+        }
+
+        if (channelId) {
+            payload.channel_id = channelId;
+        }
+
+        try {
+
+            const response = await fetch(
+                "{{ url_for('initialize_payment') }}",
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-Requested-With": "XMLHttpRequest"
+                    },
+                    body: JSON.stringify(payload)
+                }
+            );
+
+            const data = await response.json();
+
+            if (!response.ok || !data.success) {
+
+                if (data.redirect_url) {
+                    window.location.href = data.redirect_url;
+                    return;
+                }
+
+                throw new Error(
+                    data.message ||
+                    "Unable to initialize payment."
+                );
+            }
+
+            if (data.authorization_url) {
+                window.location.href =
+                    data.authorization_url;
+                return;
+            }
+
+            throw new Error(
+                "Paystack did not return a checkout URL."
+            );
+
+        } catch (error) {
+
+            console.error(error);
+
+            errorBox.textContent =
+                error.message ||
+                "Something went wrong. Please try again.";
+
+            errorBox.style.display = "block";
+
+            button.disabled = false;
+            loading.style.display = "none";
+        }
+    }
+</script>
+
+</body>
+</html>

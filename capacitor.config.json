@@ -1,0 +1,10 @@
+{
+  "appId": "com.yourcompany.kss",
+  "appName": "KSS",
+  "webDir": "www",
+  "server": {
+    "url": "http://127.0.0.1:5003",
+    "cleartext": false,
+    "androidScheme": "https"
+  }
+}

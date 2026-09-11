@@ -1,0 +1,1039 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
+
+<title>
+    {{ video.title }} — KSS
+</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+
+:root {
+    --bg: #050a0d;
+    --surface: #0c171c;
+    --surface2: #102229;
+    --border: rgba(255,255,255,.08);
+    --border-strong: rgba(255,255,255,.2);
+    --text: #f4f8f9;
+    --muted: #94a7ae;
+    --muted-dim: #5f7278;
+    --accent: #16c6b4;
+    --accent2: #23ddca;
+    --accent-dim: #0f8f82;
+    --serif: "Fraunces", Georgia, serif;
+    --sans: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    margin: 0;
+    background:
+        radial-gradient(1100px 560px at 12% -10%, rgba(22,198,180,.07), transparent 60%),
+        var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    -webkit-font-smoothing: antialiased;
+}
+
+a {
+    color: inherit;
+}
+
+/* NAV */
+
+nav {
+    height: 68px;
+    padding: 0 5%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--border);
+    background: rgba(5,10,13,.82);
+    backdrop-filter: blur(14px);
+    position: sticky;
+    top: 0;
+    z-index: 20;
+}
+
+.logo {
+    font-family: var(--serif);
+    color: var(--text);
+    font-size: 24px;
+    font-weight: 600;
+    text-decoration: none;
+    letter-spacing: -.3px;
+}
+
+.logo span {
+    color: var(--accent);
+}
+
+.nav-links {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.nav-links a {
+    text-decoration: none;
+    color: var(--muted);
+    padding: 9px 16px;
+    font-size: 14px;
+    font-weight: 500;
+    border-radius: 6px;
+    transition: color .15s ease, background .15s ease;
+}
+
+.nav-links a:hover {
+    color: var(--text);
+    background: rgba(255,255,255,.05);
+}
+
+/* LAYOUT */
+
+.container {
+    width: min(1250px, 90%);
+    margin: 48px auto 96px;
+}
+
+.main {
+    display: grid;
+    grid-template-columns: minmax(0,1.35fr) minmax(300px,.65fr);
+    gap: 44px;
+    align-items: start;
+}
+
+/* POSTER / HEADER */
+
+.poster {
+    aspect-ratio: 16/9;
+    overflow: hidden;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    position: relative;
+    box-shadow: 0 20px 50px -20px rgba(0,0,0,.6);
+}
+
+.poster img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.category {
+    display: inline-block;
+    color: var(--accent);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    margin-top: 26px;
+    padding: 5px 11px;
+    border: 1px solid rgba(22,198,180,.3);
+    background: rgba(22,198,180,.08);
+    border-radius: 100px;
+}
+
+/* MOBILE QUICK ACTIONS (shown right under the poster, hidden on desktop) */
+
+.quick-actions {
+    display: none;
+}
+
+h1 {
+    font-family: var(--serif);
+    font-weight: 600;
+    font-size: clamp(28px, 4.5vw, 42px);
+    line-height: 1.12;
+    letter-spacing: -.5px;
+    margin: 16px 0 26px;
+}
+
+.channel {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+    padding-top: 22px;
+    border-top: 1px solid var(--border);
+}
+
+.channel-logo {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    overflow: hidden;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    flex-shrink: 0;
+}
+
+.channel-logo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.channel-info a {
+    color: var(--text);
+    font-weight: 600;
+    text-decoration: none;
+    font-size: 15px;
+    transition: color .15s ease;
+}
+
+.channel-info a:hover {
+    color: var(--accent);
+}
+
+.channel-info span {
+    color: var(--muted-dim);
+    display: block;
+    font-size: 12.5px;
+    margin-top: 3px;
+}
+
+.follow {
+    margin-top: 18px;
+    display: flex;
+    gap: 8px;
+}
+
+.follow button {
+    border: 1px solid var(--border-strong);
+    background: transparent;
+    color: var(--text);
+    padding: 10px 18px;
+    font-size: 13px;
+    font-weight: 600;
+    border-radius: 100px;
+    cursor: pointer;
+    font-family: var(--sans);
+    transition: border-color .15s ease, color .15s ease, background .15s ease;
+}
+
+.follow button:hover {
+    border-color: var(--accent-dim);
+    background: rgba(22,198,180,.06);
+}
+
+.follow button.active {
+    color: var(--accent);
+    border-color: var(--accent-dim);
+    background: rgba(22,198,180,.1);
+}
+
+/* ASIDE / ACTIONS */
+
+aside {
+    position: sticky;
+    top: 92px;
+}
+
+.actions {
+    display: grid;
+    gap: 10px;
+    padding: 20px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+}
+
+.unlock-intro {
+    padding: 14px 15px;
+    border: 1px solid rgba(22,198,180,.28);
+    background: rgba(22,198,180,.08);
+    color: #d7f6f1;
+    font-size: 13px;
+    line-height: 1.5;
+    border-radius: 8px;
+    margin-bottom: 4px;
+}
+
+.unlock-intro strong {
+    display: block;
+    color: var(--accent);
+    font-size: 14px;
+    margin-bottom: 3px;
+    font-weight: 600;
+}
+
+.unavailable-access {
+    padding: 14px 15px;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.5;
+    border-radius: 8px;
+}
+
+.action {
+    width: 100%;
+    padding: 16px 18px;
+    border-radius: 8px;
+    border: 1px solid var(--border-strong);
+    background: var(--surface2);
+    color: var(--text);
+    text-decoration: none;
+    font-weight: 600;
+    text-align: center;
+    font-size: 14px;
+    transition: border-color .15s ease, background .15s ease, transform .1s ease;
+}
+
+.action:hover {
+    border-color: var(--accent-dim);
+    background: rgba(255,255,255,.04);
+}
+
+.action:active {
+    transform: scale(.99);
+}
+
+.action.primary {
+    background: var(--accent);
+    color: #1a1002;
+    border-color: var(--accent);
+}
+
+.action.primary:hover {
+    background: var(--accent2);
+    border-color: var(--accent2);
+}
+
+.price {
+    font-family: var(--serif);
+    font-size: 19px;
+    font-weight: 600;
+    display: block;
+    margin-top: 4px;
+}
+
+.action small {
+    display: block;
+    color: var(--muted-dim);
+    margin-top: 6px;
+    font-weight: 400;
+    font-size: 12px;
+}
+
+.action.primary small {
+    color: #173f3b;
+}
+
+.stats {
+    margin-top: 20px;
+    padding: 18px 20px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+}
+
+.stats-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 12.5px;
+    color: var(--muted-dim);
+}
+
+.stats-row + .stats-row {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid var(--border);
+}
+
+.stats-row strong {
+    color: var(--text);
+    font-weight: 600;
+    font-size: 13.5px;
+}
+
+/* RELATED */
+
+.related {
+    margin-top: 76px;
+}
+
+.related h2 {
+    font-family: var(--serif);
+    font-weight: 600;
+    font-size: 22px;
+    margin: 0 0 24px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0,1fr));
+    gap: 22px;
+}
+
+.card {
+    text-decoration: none;
+    display: block;
+    transition: transform .18s ease;
+}
+
+.card:hover {
+    transform: translateY(-3px);
+}
+
+.thumb {
+    aspect-ratio: 16/9;
+    overflow: hidden;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    transition: border-color .18s ease;
+}
+
+.card:hover .thumb {
+    border-color: var(--accent-dim);
+}
+
+.thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform .35s ease;
+}
+
+.card:hover .thumb img {
+    transform: scale(1.04);
+}
+
+.card-title {
+    margin-top: 12px;
+    font-family: var(--serif);
+    font-weight: 600;
+    font-size: 14.5px;
+    line-height: 1.35;
+    color: var(--text);
+}
+
+.card-channel {
+    color: var(--muted-dim);
+    font-size: 11.5px;
+    margin-top: 6px;
+}
+
+@media (max-width: 900px) {
+
+    .main {
+        grid-template-columns: 1fr;
+        gap: 32px;
+    }
+
+    aside {
+        position: static;
+    }
+
+    .quick-actions {
+        display: grid;
+        margin-top: 22px;
+    }
+
+    aside .actions {
+        display: none;
+    }
+
+    .grid {
+        grid-template-columns: repeat(2, minmax(0,1fr));
+    }
+
+}
+
+@media (max-width: 600px) {
+
+    .container {
+        width: 92%;
+        margin: 32px auto 64px;
+    }
+
+    .nav-links a:nth-child(1) {
+        display: none;
+    }
+
+    .grid {
+        gap: 16px;
+    }
+
+    .related {
+        margin-top: 56px;
+    }
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<nav>
+
+<a
+    class="logo"
+    href="{{ url_for('index') }}"
+>
+    K<span>SS</span>
+</a>
+
+<div class="nav-links">
+
+<a href="{{ url_for('videos') }}">
+    Browse
+</a>
+
+{% if current_user %}
+
+<a href="{{ url_for('dashboard') }}">
+    Dashboard
+</a>
+
+<a href="{{ url_for('profile') }}">
+    Profile
+</a>
+
+{% else %}
+
+<a href="{{ url_for('login') }}">
+    Log in
+</a>
+
+{% endif %}
+
+</div>
+
+</nav>
+
+
+<main class="container">
+
+<div class="main">
+
+<section>
+
+<div class="poster">
+
+{% if video.thumbnail_url %}
+
+<img
+    src="{{ video.thumbnail_url }}"
+    alt="{{ video.title }}"
+>
+
+{% endif %}
+
+</div>
+
+
+<div class="actions quick-actions">
+
+{% if access_type %}
+
+<a
+    class="action primary"
+    href="{{ url_for(
+        'watch',
+        slug=video.slug
+    ) }}"
+>
+    Watch now
+
+    <small>
+        You already have access
+    </small>
+</a>
+
+
+{% else %}
+
+{% if video.purchase_enabled %}
+
+<a
+    class="action primary"
+    href="{{ url_for(
+        'purchase_video',
+        video_id=video.video_id
+    ) }}"
+>
+
+    Buy now
+    <span class="price">
+        {{ video.currency or 'GHS' }}
+        {{ "%.2f"|format(
+            video.purchase_price|float
+        ) }}
+    </span>
+
+    <small>
+        Permanent access
+    </small>
+
+</a>
+
+{% endif %}
+
+
+{% if video.rental_enabled %}
+
+<a
+    class="action"
+    href="{{ url_for(
+        'rent_video',
+        video_id=video.video_id
+    ) }}"
+>
+
+    Rent for
+    <span class="price">
+        {{ video.currency or 'GHS' }}
+        {{ "%.2f"|format(
+            video.rental_price|float
+        ) }}
+    </span>
+
+    <small>
+        Access for
+        48 hours
+    </small>
+
+</a>
+
+{% endif %}
+
+
+{% if video.subscription_enabled
+      and not has_subscription %}
+
+<a
+    class="action"
+    href="{{ url_for(
+        'subscribe_channel',
+        channel_id=video.channel_id
+    ) }}"
+>
+
+    Subscribe to channel
+
+    <small>
+        {{ video.currency or 'GHS' }}
+        {{ "%.2f"|format(
+            subscription_price|float
+        ) }}
+        / {{ subscription_days }} days
+    </small>
+
+</a>
+
+{% endif %}
+
+{% endif %}
+
+
+{% if video.is_free and not access_type %}
+
+<a
+    class="action primary"
+    href="{{ url_for(
+        'watch',
+        slug=video.slug
+    ) }}"
+>
+    Watch free
+</a>
+
+{% endif %}
+
+</div>
+
+
+<div class="category">
+    {{ video.category_name or "KSS video" }}
+</div>
+
+
+<h1>
+    {{ video.title }}
+</h1>
+
+
+<div class="channel">
+
+<div class="channel-logo">
+
+{% if video.channel_logo %}
+
+<img
+    src="{{ video.channel_logo }}"
+    alt=""
+>
+
+{% endif %}
+
+</div>
+
+<div class="channel-info">
+
+<a
+    href="{{ url_for(
+        'channel',
+        slug=video.channel_slug
+    ) }}"
+>
+    {{ video.channel_name }}
+</a>
+
+<span>
+    {{ video.subscriber_count|views }} subscribers
+</span>
+
+</div>
+
+</div>
+
+
+{% if current_user %}
+
+<div class="follow">
+
+<button
+    id="followButton"
+    class="{% if is_following %}active{% endif %}"
+    onclick="toggleFollow()"
+>
+    {% if is_following %}
+        ✓ Following
+    {% else %}
+        + Follow
+    {% endif %}
+</button>
+
+</div>
+
+{% endif %}
+
+
+</section>
+
+
+<aside>
+
+<div class="actions">
+
+{% if access_type %}
+
+<a
+    class="action primary"
+    href="{{ url_for(
+        'watch',
+        slug=video.slug
+    ) }}"
+>
+    Watch now
+
+    <small>
+        You already have access
+    </small>
+</a>
+
+
+{% else %}
+
+<div class="unlock-intro">
+    <strong>Unlock this premium video</strong>
+    Choose a 48-hour rental or buy it once for permanent access.
+</div>
+
+{% if video.purchase_enabled %}
+
+<a
+    class="action primary"
+    href="{{ url_for(
+        'purchase_video',
+        video_id=video.video_id
+    ) }}"
+>
+
+    Buy now
+    <span class="price">
+        {{ video.currency or 'GHS' }}
+        {{ "%.2f"|format(
+            video.purchase_price|float
+        ) }}
+    </span>
+
+    <small>
+        Permanent access
+    </small>
+
+</a>
+
+{% endif %}
+
+
+{% if video.rental_enabled %}
+
+<a
+    class="action"
+    href="{{ url_for(
+        'rent_video',
+        video_id=video.video_id
+    ) }}"
+>
+
+    Rent for
+    <span class="price">
+        {{ video.currency or 'GHS' }}
+        {{ "%.2f"|format(
+            video.rental_price|float
+        ) }}
+    </span>
+
+    <small>
+        Access for
+        48 hours
+    </small>
+
+</a>
+
+{% endif %}
+
+
+{% if video.subscription_enabled
+      and not has_subscription %}
+
+<a
+    class="action"
+    href="{{ url_for(
+        'subscribe_channel',
+        channel_id=video.channel_id
+    ) }}"
+>
+
+    Subscribe to channel
+
+    <small>
+        {{ video.currency or 'GHS' }}
+        {{ "%.2f"|format(
+            subscription_price|float
+        ) }}
+        / {{ subscription_days }} days
+    </small>
+
+</a>
+
+{% endif %}
+
+{% if not video.purchase_enabled
+      and not video.rental_enabled
+      and not video.subscription_enabled %}
+<div class="unavailable-access">
+    This premium video does not have an active payment option yet.
+</div>
+{% endif %}
+
+{% endif %}
+
+
+{% if video.is_free and not access_type %}
+
+<a
+    class="action primary"
+    href="{{ url_for(
+        'watch',
+        slug=video.slug
+    ) }}"
+>
+    Watch free
+</a>
+
+{% endif %}
+
+</div>
+
+
+<div class="stats">
+
+<div class="stats-row">
+
+<span>
+    Views
+</span>
+
+<strong>
+    {{ video.total_views|views }}
+</strong>
+
+</div>
+
+
+<div class="stats-row">
+
+<span>
+    Published
+</span>
+
+<strong>
+    {{ video.published_at.strftime('%d %b %Y')
+       if video.published_at else 'Recently' }}
+</strong>
+
+</div>
+
+</div>
+
+</aside>
+
+</div>
+
+
+<section class="related">
+
+<h2>
+    You may also like
+</h2>
+
+<div class="grid">
+
+{% for item in related %}
+
+<a
+    class="card"
+    href="{{ url_for(
+        'video_details',
+        slug=item.slug
+    ) }}"
+>
+
+<div class="thumb">
+
+{% if item.thumbnail_url %}
+
+<img
+    src="{{ item.thumbnail_url }}"
+    alt="{{ item.title }}"
+    loading="lazy"
+>
+
+{% endif %}
+
+</div>
+
+<div class="card-title">
+    {{ item.title }}
+</div>
+
+<div class="card-channel">
+    {{ item.channel_name }}
+</div>
+
+</a>
+
+{% endfor %}
+
+</div>
+
+</section>
+
+</main>
+
+
+<script>
+
+async function toggleFollow() {
+
+    {% if not current_user %}
+
+    window.location.href =
+        "{{ url_for(
+            'login',
+            next=request.path
+        ) }}";
+
+    return;
+
+    {% endif %}
+
+
+    const button =
+        document.getElementById(
+            "followButton"
+        );
+
+    try {
+
+        const response =
+            await fetch(
+                "{{ url_for(
+                    'toggle_channel_follow',
+                    channel_id=video.channel_id
+                ) }}",
+                {
+                    method:"POST",
+                    headers:{
+                        "Content-Type":
+                            "application/json"
+                    }
+                }
+            );
+
+        const data =
+            await response.json();
+
+        if (!data.success) {
+            return;
+        }
+
+        if (data.following) {
+
+            button.classList.add("active");
+
+            button.textContent =
+                "✓ Following";
+
+        } else {
+
+            button.classList.remove("active");
+
+            button.textContent =
+                "+ Follow";
+        }
+
+    } catch(error) {
+
+        console.error(error);
+
+    }
+
+}
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Active devices — KSS</title>
+    <style>
+        body { font-family: system-ui, -apple-system, sans-serif;
+               background: #050a0d; color: #f5f8f9;
+               margin: 0; padding: 40px 20px; }
+        .wrap { max-width: 640px; margin: 0 auto; }
+        h1 { font-size: 22px; margin: 0 0 6px; }
+        .sub { color: #8ea2a9; font-size: 14px; margin: 0 0 24px; }
+        .card { background: #0b1519;
+                border: 1px solid rgba(255,255,255,.08);
+                border-radius: 12px; padding: 16px 18px;
+                margin-bottom: 10px;
+                display: flex; align-items: center; gap: 14px; }
+        .card.current { border-color: #16c6b4; }
+        .device { font-weight: 600; }
+        .meta { color: #6e7c83; font-size: 12px; margin-top: 3px; }
+        .badge { font-size: 11px; padding: 2px 8px;
+                 border-radius: 999px; background: #16c6b4;
+                 color: #06211d; font-weight: 700; }
+        .spacer { flex: 1; }
+        form { display: inline; }
+        button { background: #ff453a; color: #fff; border: 0;
+                 padding: 8px 14px; border-radius: 8px;
+                 font-weight: 600; cursor: pointer; }
+        button.secondary { background: #28282c; color: #f5f8f9; }
+        .flash { padding: 10px 14px; border-radius: 8px;
+                 background: #123; color: #cfe;
+                 margin-bottom: 14px; }
+        .back { display: inline-block; color: #8ea2a9;
+                text-decoration: none; margin-bottom: 18px;
+                font-size: 13px; }
+    </style>
+</head>
+<body>
+<div class="wrap">
+
+    <a class="back" href="{{ url_for('profile') }}">← Back to profile</a>
+
+    <h1>Active devices</h1>
+    <p class="sub">
+        You can be signed in on {{ max_sessions }} devices at once.
+    </p>
+
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% for m in messages %}
+                <div class="flash">{{ m }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    {% for s in sessions %}
+        <div class="card {% if s.is_current %}current{% endif %}">
+            <div>
+                <div class="device">{{ s.device }}</div>
+                <div class="meta">
+                    Last active {{ s.last_seen_at.strftime('%d %b %Y, %H:%M') }}
+                    · Signed in {{ s.created_at.strftime('%d %b %Y') }}
+                </div>
+            </div>
+            <div class="spacer"></div>
+            {% if s.is_current %}
+                <span class="badge">This device</span>
+            {% else %}
+                <form method="post"
+                      action="{{ url_for('revoke_session', token=s.token) }}">
+                    <button type="submit">Sign out</button>
+                </form>
+            {% endif %}
+        </div>
+    {% endfor %}
+
+    <form method="post"
+          action="{{ url_for('revoke_all_sessions') }}"
+          style="margin-top: 18px;">
+        <button type="submit" class="secondary">
+            Sign out of all devices
+        </button>
+    </form>
+
+</div>
+</body>
+</html>

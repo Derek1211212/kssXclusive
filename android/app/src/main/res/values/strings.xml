@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">KSS</string>
+    <string name="title_activity_main">KSS</string>
+    <string name="package_name">com.yourcompany.kss</string>
+    <string name="custom_url_scheme">com.yourcompany.kss</string>
+</resources>

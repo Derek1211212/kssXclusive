@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
+
+<title>Browse Videos — KSS</title>
+
+<style>
+
+:root {
+    --bg:#050a0d;
+    --surface:#0b1519;
+    --surface2:#102027;
+    --border:rgba(255,255,255,.08);
+    --text:#f4f8f9;
+    --muted:#91a5ac;
+    --accent:#16c6b4;
+}
+
+* {
+    box-sizing:border-box;
+}
+
+body {
+    margin:0;
+    background:var(--bg);
+    color:var(--text);
+    font-family:
+        Inter,
+        system-ui,
+        sans-serif;
+}
+
+nav {
+    height:70px;
+    padding:0 5%;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    border-bottom:1px solid var(--border);
+    background:rgba(5,10,13,.92);
+    position:sticky;
+    top:0;
+    z-index:20;
+    backdrop-filter:blur(15px);
+}
+
+.logo {
+    color:var(--accent);
+    font-size:26px;
+    font-weight:950;
+    text-decoration:none;
+}
+
+.nav-links {
+    display:flex;
+    gap:8px;
+}
+
+.nav-links a {
+    color:var(--muted);
+    text-decoration:none;
+    padding:9px 12px;
+    border-radius:9px;
+    font-size:13px;
+}
+
+.nav-links a:hover {
+    background:rgba(255,255,255,.06);
+    color:white;
+}
+
+.container {
+    width:min(1400px,90%);
+    margin:45px auto 80px;
+}
+
+.heading {
+    margin-bottom:25px;
+}
+
+.heading h1 {
+    font-size:42px;
+    margin:0 0 8px;
+    letter-spacing:-1.5px;
+}
+
+.heading p {
+    color:var(--muted);
+}
+
+.search {
+    display:flex;
+    gap:10px;
+    margin-bottom:18px;
+}
+
+.search input {
+    flex:1;
+    background:var(--surface);
+    color:white;
+    border:1px solid var(--border);
+    border-radius:11px;
+    padding:14px 16px;
+    outline:none;
+}
+
+.search button {
+    background:var(--accent);
+    color:#03100e;
+    border:0;
+    border-radius:11px;
+    padding:0 24px;
+    font-weight:900;
+    cursor:pointer;
+}
+
+.filters {
+    display:flex;
+    gap:8px;
+    overflow-x:auto;
+    padding-bottom:10px;
+}
+
+.filter {
+    white-space:nowrap;
+    text-decoration:none;
+    color:var(--muted);
+    background:var(--surface);
+    border:1px solid var(--border);
+    padding:9px 13px;
+    border-radius:9px;
+    font-size:12px;
+}
+
+.filter.active,
+.filter:hover {
+    color:var(--accent);
+    border-color:rgba(22,198,180,.3);
+}
+
+.grid {
+    margin-top:30px;
+    display:grid;
+    grid-template-columns:
+        repeat(4,minmax(0,1fr));
+    gap:22px 18px;
+}
+
+.card {
+    min-width:0;
+    text-decoration:none;
+}
+
+.thumbnail {
+    position:relative;
+    aspect-ratio:16/9;
+    border-radius:12px;
+    overflow:hidden;
+    background:var(--surface2);
+}
+
+.thumbnail img {
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    transition:.3s;
+}
+
+.card:hover img {
+    transform:scale(1.04);
+}
+
+.badge {
+    position:absolute;
+    top:8px;
+    left:8px;
+    background:rgba(0,0,0,.85);
+    color:var(--accent);
+    padding:5px 8px;
+    border-radius:6px;
+    font-size:10px;
+    font-weight:900;
+}
+
+.lock-badge {
+    position:absolute;
+    top:8px;
+    right:8px;
+    width:30px;
+    height:30px;
+    display:grid;
+    place-items:center;
+    border-radius:50%;
+    background:rgba(0,0,0,.82);
+    border:1px solid rgba(255,255,255,.18);
+    color:#fff;
+    font-size:14px;
+}
+
+.duration {
+    position:absolute;
+    bottom:8px;
+    right:8px;
+    background:rgba(0,0,0,.85);
+    padding:4px 6px;
+    border-radius:5px;
+    font-size:10px;
+}
+
+.info {
+    padding-top:11px;
+}
+
+.title {
+    font-weight:800;
+    line-height:1.4;
+    display:-webkit-box;
+    -webkit-line-clamp:2;
+    -webkit-box-orient:vertical;
+    overflow:hidden;
+}
+
+.channel {
+    color:var(--muted);
+    font-size:12px;
+    margin-top:5px;
+}
+
+.meta {
+    color:#63757c;
+    font-size:11px;
+    margin-top:4px;
+}
+
+.empty {
+    padding:70px 20px;
+    text-align:center;
+    color:var(--muted);
+}
+
+.pagination {
+    display:flex;
+    justify-content:center;
+    gap:7px;
+    margin-top:45px;
+}
+
+.pagination a {
+    text-decoration:none;
+    padding:10px 14px;
+    border:1px solid var(--border);
+    border-radius:8px;
+    color:var(--muted);
+}
+
+.pagination .active {
+    background:var(--accent);
+    color:#03100e;
+    font-weight:900;
+}
+
+@media(max-width:1000px) {
+    .grid {
+        grid-template-columns:
+            repeat(3,minmax(0,1fr));
+    }
+}
+
+@media(max-width:700px) {
+
+    .grid {
+        grid-template-columns:
+            repeat(2,minmax(0,1fr));
+        gap:15px 10px;
+    }
+
+    .heading h1 {
+        font-size:32px;
+    }
+
+    .nav-links a:nth-child(1) {
+        display:none;
+    }
+
+    .search button {
+        padding:0 17px;
+    }
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<nav>
+
+<a
+    class="logo"
+    href="{{ url_for('index') }}"
+>
+    KSS
+</a>
+
+<div class="nav-links">
+
+<a href="{{ url_for('index') }}">
+    Home
+</a>
+
+{% if current_user %}
+
+<a href="{{ url_for('dashboard') }}">
+    Dashboard
+</a>
+
+<a href="{{ url_for('profile') }}">
+    Profile
+</a>
+
+{% else %}
+
+<a href="{{ url_for('login') }}">
+    Login
+</a>
+
+{% endif %}
+
+</div>
+
+</nav>
+
+
+<main class="container">
+
+<div class="heading">
+
+<h1>
+    Browse videos
+</h1>
+
+<p>
+    Discover videos from KSS creators.
+</p>
+
+</div>
+
+
+<form
+    class="search"
+    method="GET"
+    action="{{ url_for('videos') }}"
+>
+
+<input
+    name="q"
+    value="{{ search_query }}"
+    placeholder="Search videos, creators, categories..."
+    autocomplete="off"
+>
+
+{% if selected_category %}
+<input
+    type="hidden"
+    name="category"
+    value="{{ selected_category }}"
+>
+{% endif %}
+
+<button type="submit">
+    Search
+</button>
+
+</form>
+
+
+<div class="filters">
+
+<a
+    class="filter {% if not selected_type %}active{% endif %}"
+    href="{{ url_for(
+        'videos',
+        q=search_query,
+        category=selected_category
+    ) }}"
+>
+    All
+</a>
+
+<a
+    class="filter {% if selected_type == 'free' %}active{% endif %}"
+    href="{{ url_for(
+        'videos',
+        q=search_query,
+        category=selected_category,
+        type='free'
+    ) }}"
+>
+    Free
+</a>
+
+<a
+    class="filter {% if selected_type == 'purchase' %}active{% endif %}"
+    href="{{ url_for(
+        'videos',
+        q=search_query,
+        category=selected_category,
+        type='purchase'
+    ) }}"
+>
+    Purchase
+</a>
+
+<a
+    class="filter {% if selected_type == 'rental' %}active{% endif %}"
+    href="{{ url_for(
+        'videos',
+        q=search_query,
+        category=selected_category,
+        type='rental'
+    ) }}"
+>
+    Rental
+</a>
+
+{% for category in categories %}
+
+<a
+    class="filter {% if selected_category|string == category.category_id|string %}active{% endif %}"
+    href="{{ url_for(
+        'videos',
+        q=search_query,
+        category=category.category_id,
+        type=selected_type
+    ) }}"
+>
+    {{ category.category_name }}
+</a>
+
+{% endfor %}
+
+</div>
+
+
+{% if videos %}
+
+<div class="grid">
+
+{% for video in videos %}
+
+<a
+    class="card"
+    href="{{ url_for(
+        'video_details',
+        slug=video.slug
+    ) }}"
+>
+
+<div class="thumbnail">
+
+{% if video.thumbnail_url %}
+
+<img
+    src="{{ video.thumbnail_url }}"
+    alt="{{ video.title }}"
+    loading="lazy"
+>
+
+{% endif %}
+
+{% if video.is_locked %}
+<span class="lock-badge" aria-label="Locked video" title="Rent or buy to watch">&#128274;</span>
+{% endif %}
+
+{% if video.is_free %}
+
+<span class="badge">
+    FREE
+</span>
+
+{% elif video.purchase_enabled %}
+
+<span class="badge">
+    PAID
+</span>
+
+{% endif %}
+
+{% if video.duration_seconds %}
+
+<span class="duration">
+    {{ video.duration_seconds|duration }}
+</span>
+
+{% endif %}
+
+</div>
+
+
+<div class="info">
+
+<div class="title">
+    {{ video.title }}
+</div>
+
+<div class="channel">
+    {{ video.channel_name }}
+</div>
+
+<div class="meta">
+    {{ video.total_views|views }} views
+    {% if video.category_name %}
+        · {{ video.category_name }}
+    {% endif %}
+</div>
+
+</div>
+
+</a>
+
+{% endfor %}
+
+</div>
+
+{% else %}
+
+<div class="empty">
+
+<h2>
+    No videos found
+</h2>
+
+<p>
+    Try a different search term or category.
+</p>
+
+</div>
+
+{% endif %}
+
+
+{% if total_pages > 1 %}
+
+<div class="pagination">
+
+{% if page > 1 %}
+
+<a href="{{ url_for(
+    'videos',
+    page=page-1,
+    q=search_query,
+    category=selected_category,
+    type=selected_type
+) }}">
+    ←
+</a>
+
+{% endif %}
+
+
+{% for p in range(
+    [1, page-2]|max,
+    [total_pages+1, page+3]|min
+) %}
+
+<a
+    class="{% if p == page %}active{% endif %}"
+    href="{{ url_for(
+        'videos',
+        page=p,
+        q=search_query,
+        category=selected_category,
+        type=selected_type
+    ) }}"
+>
+    {{ p }}
+</a>
+
+{% endfor %}
+
+
+{% if page < total_pages %}
+
+<a href="{{ url_for(
+    'videos',
+    page=page+1,
+    q=search_query,
+    category=selected_category,
+    type=selected_type
+) }}">
+    →
+</a>
+
+{% endif %}
+
+</div>
+
+{% endif %}
+
+</main>
+
+</body>
+</html>

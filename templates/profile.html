@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile — KSS</title>
+    <style>
+        body { font-family: system-ui, -apple-system, sans-serif;
+               background: #050a0d; color: #f5f8f9;
+               margin: 0; padding: 40px 20px; }
+        .wrap { max-width: 640px; margin: 0 auto; }
+        h1 { font-size: 22px; margin: 0 0 6px; }
+        .sub { color: #8ea2a9; font-size: 14px; margin: 0 0 24px; }
+        .card { background: #0b1519;
+                border: 1px solid rgba(255,255,255,.08);
+                border-radius: 12px; padding: 20px 22px;
+                margin-bottom: 14px; }
+        .label { color: #8ea2a9; font-size: 12px;
+                 text-transform: uppercase; letter-spacing: .06em;
+                 margin-bottom: 4px; }
+        .value { font-size: 15px; }
+        a.btn { display: inline-block; color: #16c6b4;
+                text-decoration: none; font-weight: 600;
+                margin-top: 8px; }
+    </style>
+</head>
+<body>
+<div class="wrap">
+    <h1>Your profile</h1>
+    <p class="sub">Account details and security settings.</p>
+
+    <div class="card">
+        <div class="label">Full name</div>
+        <div class="value">{{ user.full_name or '—' }}</div>
+    </div>
+
+    <div class="card">
+        <div class="label">Username</div>
+        <div class="value">{{ user.username }}</div>
+    </div>
+
+    <div class="card">
+        <div class="label">Email</div>
+        <div class="value">{{ user.email }}</div>
+    </div>
+
+    <div class="card">
+        <div class="label">Security</div>
+        <div class="value">Sessions</div>
+        <a class="btn" href="{{ url_for('account_sessions') }}">
+            Manage active devices →
+        </a>
+    </div>
+
+    <a class="btn" href="{{ url_for('logout') }}">Sign out</a>
+</div>
+</body>
+</html>

@@ -1,0 +1,1456 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Channels | KSS Admin</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --bg: #0b0f19;
+            --sidebar: #101522;
+            --card: #121827;
+            --card-hover: #171e2e;
+            --border: rgba(255,255,255,0.07);
+            --text: #f5f7fb;
+            --muted: #8b95a7;
+            --primary: #ff3158;
+            --primary-dark: #d91f43;
+            --green: #27d17f;
+            --yellow: #f5c451;
+            --blue: #4d9fff;
+            --danger: #ff5c6c;
+        }
+
+        body {
+            font-family: "Inter", sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        button,
+        input,
+        select {
+            font-family: inherit;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        /* =========================
+           SIDEBAR
+        ========================= */
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 250px;
+            background: var(--sidebar);
+            border-right: 1px solid var(--border);
+            padding: 24px 16px;
+            z-index: 1000;
+            transition: transform .25s ease;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 11px;
+            padding: 0 10px 28px;
+        }
+
+        .brand-icon {
+            width: 38px;
+            height: 38px;
+            border-radius: 11px;
+            background: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 19px;
+            box-shadow: 0 8px 25px rgba(255,49,88,.22);
+        }
+
+        .brand-name {
+            font-size: 21px;
+            font-weight: 800;
+            letter-spacing: -.5px;
+        }
+
+        .nav-label {
+            color: #5e6879;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 1.2px;
+            padding: 0 12px;
+            margin: 12px 0 8px;
+            text-transform: uppercase;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 13px;
+            padding: 12px 13px;
+            margin-bottom: 4px;
+            border-radius: 10px;
+            color: var(--muted);
+            font-size: 13px;
+            font-weight: 600;
+            transition: .2s;
+        }
+
+        .nav-item:hover {
+            color: var(--text);
+            background: rgba(255,255,255,.045);
+        }
+
+        .nav-item.active {
+            color: #fff;
+            background: rgba(255,49,88,.12);
+        }
+
+        .nav-item.active .nav-icon {
+            color: var(--primary);
+        }
+
+        .nav-icon {
+            width: 19px;
+            text-align: center;
+            font-size: 16px;
+        }
+
+        /* =========================
+           MAIN
+        ========================= */
+
+        .main {
+            margin-left: 250px;
+            min-height: 100vh;
+        }
+
+        .topbar {
+            height: 76px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 32px;
+            background: rgba(11,15,25,.92);
+            backdrop-filter: blur(14px);
+            position: sticky;
+            top: 0;
+            z-index: 900;
+        }
+
+        .topbar-left {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .mobile-menu {
+            display: none;
+            border: 0;
+            background: transparent;
+            color: white;
+            font-size: 22px;
+            cursor: pointer;
+        }
+
+        .page-title {
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .topbar-right {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+        }
+
+        .notification {
+            position: relative;
+            color: var(--muted);
+            font-size: 19px;
+            cursor: pointer;
+        }
+
+        .notification-dot {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--primary);
+            top: 0;
+            right: -1px;
+        }
+
+        .admin-profile {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .admin-avatar {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #ff3158, #8d2040);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 800;
+        }
+
+        .admin-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .admin-name {
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .admin-role {
+            font-size: 10px;
+            color: var(--muted);
+            margin-top: 2px;
+        }
+
+        /* =========================
+           CONTENT
+        ========================= */
+
+        .content {
+            padding: 32px;
+        }
+
+        .page-heading {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 20px;
+            margin-bottom: 28px;
+        }
+
+        .heading-title {
+            font-size: 27px;
+            font-weight: 800;
+            letter-spacing: -.7px;
+        }
+
+        .heading-subtitle {
+            color: var(--muted);
+            font-size: 13px;
+            margin-top: 7px;
+        }
+
+        .primary-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            background: var(--primary);
+            color: #fff;
+            border: 0;
+            border-radius: 9px;
+            padding: 11px 17px;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: .2s;
+        }
+
+        .primary-btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+        }
+
+        /* =========================
+           STAT CARDS
+        ========================= */
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 25px;
+        }
+
+        .stat-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 13px;
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::after {
+            content: "";
+            position: absolute;
+            width: 75px;
+            height: 75px;
+            border-radius: 50%;
+            right: -28px;
+            top: -28px;
+            background: rgba(255,255,255,.025);
+        }
+
+        .stat-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .stat-label {
+            color: var(--muted);
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .stat-icon {
+            width: 34px;
+            height: 34px;
+            border-radius: 9px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255,49,88,.1);
+            color: var(--primary);
+            font-size: 15px;
+        }
+
+        .stat-value {
+            font-size: 25px;
+            font-weight: 800;
+            letter-spacing: -.5px;
+        }
+
+        /* =========================
+           FILTERS
+        ========================= */
+
+        .panel {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            overflow: hidden;
+        }
+
+        .filters {
+            padding: 17px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .search-box {
+            position: relative;
+            flex: 1;
+            max-width: 420px;
+        }
+
+        .search-box span {
+            position: absolute;
+            left: 13px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #687386;
+            font-size: 14px;
+        }
+
+        .search-box input {
+            width: 100%;
+            height: 40px;
+            background: #0d1320;
+            color: var(--text);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 0 13px 0 38px;
+            outline: none;
+            font-size: 12px;
+        }
+
+        .search-box input:focus {
+            border-color: rgba(255,49,88,.45);
+        }
+
+        .filter-select {
+            height: 40px;
+            min-width: 135px;
+            background: #0d1320;
+            color: #dce1e9;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 0 12px;
+            outline: none;
+            font-size: 11px;
+        }
+
+        .clear-btn {
+            height: 40px;
+            padding: 0 13px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            background: transparent;
+            color: var(--muted);
+            cursor: pointer;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .clear-btn:hover {
+            color: #fff;
+            background: rgba(255,255,255,.04);
+        }
+
+        /* =========================
+           TABLE
+        ========================= */
+
+        .table-wrap {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 900px;
+        }
+
+        th {
+            text-align: left;
+            color: #687386;
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: .6px;
+            padding: 14px 17px;
+            border-bottom: 1px solid var(--border);
+            white-space: nowrap;
+        }
+
+        td {
+            padding: 15px 17px;
+            border-bottom: 1px solid rgba(255,255,255,.045);
+            font-size: 12px;
+            vertical-align: middle;
+        }
+
+        tbody tr {
+            transition: .15s;
+        }
+
+        tbody tr:hover {
+            background: rgba(255,255,255,.025);
+        }
+
+        tbody tr:last-child td {
+            border-bottom: 0;
+        }
+
+        .channel-cell {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            min-width: 230px;
+        }
+
+        .channel-logo {
+            width: 42px;
+            height: 42px;
+            border-radius: 10px;
+            object-fit: cover;
+            background: #1d2534;
+            flex-shrink: 0;
+        }
+
+        .channel-placeholder {
+            width: 42px;
+            height: 42px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #262f41, #171d2b);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #aeb7c7;
+            font-weight: 800;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+
+        .channel-name {
+            font-weight: 700;
+            color: #f0f3f8;
+            margin-bottom: 4px;
+        }
+
+        .channel-slug {
+            color: #687386;
+            font-size: 10px;
+        }
+
+        .owner {
+            color: #c6ccd6;
+            font-weight: 500;
+        }
+
+        .owner-email {
+            color: #687386;
+            font-size: 10px;
+            margin-top: 3px;
+        }
+
+        .number {
+            color: #dce1e9;
+            font-weight: 600;
+        }
+
+        .status-badge,
+        .verification-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            border-radius: 20px;
+            padding: 5px 9px;
+            font-size: 9px;
+            font-weight: 700;
+        }
+
+        .status-active {
+            color: var(--green);
+            background: rgba(39,209,127,.09);
+        }
+
+        .status-inactive {
+            color: var(--danger);
+            background: rgba(255,92,108,.09);
+        }
+
+        .verified {
+            color: var(--blue);
+            background: rgba(77,159,255,.09);
+        }
+
+        .not-verified {
+            color: #8993a4;
+            background: rgba(137,147,164,.08);
+        }
+
+        .actions {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+        }
+
+        .action-btn {
+            width: 31px;
+            height: 31px;
+            border-radius: 7px;
+            border: 1px solid var(--border);
+            background: transparent;
+            color: #8e98a9;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            transition: .15s;
+        }
+
+        .action-btn:hover {
+            color: white;
+            background: rgba(255,255,255,.05);
+        }
+
+        .action-btn.danger:hover {
+            color: var(--danger);
+            border-color: rgba(255,92,108,.2);
+        }
+
+        .action-btn.success:hover {
+            color: var(--green);
+            border-color: rgba(39,209,127,.2);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--muted);
+        }
+
+        .empty-icon {
+            font-size: 30px;
+            margin-bottom: 12px;
+            opacity: .6;
+        }
+
+        .empty-title {
+            color: #d9dee7;
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .empty-text {
+            font-size: 11px;
+        }
+
+        /* =========================
+           MODAL
+        ========================= */
+
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,.7);
+            backdrop-filter: blur(5px);
+            align-items: center;
+            justify-content: center;
+            z-index: 3000;
+            padding: 20px;
+        }
+
+        .modal-overlay.show {
+            display: flex;
+        }
+
+        .modal {
+            width: 100%;
+            max-width: 400px;
+            background: #141a27;
+            border: 1px solid var(--border);
+            border-radius: 15px;
+            padding: 24px;
+            box-shadow: 0 25px 80px rgba(0,0,0,.45);
+        }
+
+        .modal-title {
+            font-size: 17px;
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
+
+        .modal-text {
+            color: var(--muted);
+            font-size: 12px;
+            line-height: 1.6;
+            margin-bottom: 23px;
+        }
+
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 9px;
+        }
+
+        .modal-btn {
+            padding: 10px 15px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            background: transparent;
+            color: #c8ced8;
+            font-size: 11px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .modal-btn.confirm {
+            background: var(--danger);
+            border-color: var(--danger);
+            color: #fff;
+        }
+
+        .modal-btn.confirm.activate {
+            background: var(--green);
+            border-color: var(--green);
+        }
+
+        /* =========================
+           RESPONSIVE
+        ========================= */
+
+        @media (max-width: 1100px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 800px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+
+            .main {
+                margin-left: 0;
+            }
+
+            .mobile-menu {
+                display: block;
+            }
+
+            .content {
+                padding: 22px 17px;
+            }
+
+            .topbar {
+                padding: 0 17px;
+            }
+
+            .admin-info {
+                display: none;
+            }
+
+            .page-heading {
+                flex-direction: column;
+            }
+
+            .filters {
+                flex-wrap: wrap;
+            }
+
+            .search-box {
+                max-width: none;
+                flex-basis: 100%;
+            }
+        }
+
+        @media (max-width: 550px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .heading-title {
+                font-size: 23px;
+            }
+
+            .primary-btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- =========================
+     SIDEBAR
+========================= -->
+
+<aside class="sidebar" id="sidebar">
+
+    <div class="brand">
+        <div class="brand-icon">K</div>
+        <div class="brand-name">KSS</div>
+    </div>
+
+    <div class="nav-label">Overview</div>
+
+    <a href="{{ url_for('admin_dashboard') }}" class="nav-item">
+        <span class="nav-icon">▦</span>
+        Dashboard
+    </a>
+
+    <div class="nav-label">Management</div>
+
+    <a href="{{ url_for('admin_users') }}" class="nav-item">
+        <span class="nav-icon">♙</span>
+        Users
+    </a>
+
+    <a href="{{ url_for('admin_channels') }}" class="nav-item active">
+        <span class="nav-icon">◉</span>
+        Channels
+    </a>
+
+    <a href="{{ url_for('admin_videos') }}" class="nav-item">
+        <span class="nav-icon">▶</span>
+        Videos
+    </a>
+
+    <a href="{{ url_for('admin_payments') }}" class="nav-item">
+        <span class="nav-icon">₵</span>
+        Payments
+    </a>
+
+    <div class="nav-label">Insights</div>
+
+    <a href="{{ url_for('admin_analytics') }}" class="nav-item">
+        <span class="nav-icon">⌁</span>
+        Analytics
+    </a>
+
+    <div class="nav-label">System</div>
+
+    <a href="#" class="nav-item">
+        <span class="nav-icon">⚙</span>
+        Settings
+    </a>
+
+    <a href="#" class="nav-item">
+        <span class="nav-icon">?</span>
+        Help
+    </a>
+
+</aside>
+
+
+<!-- =========================
+     MAIN
+========================= -->
+
+<main class="main">
+
+    <header class="topbar">
+
+        <div class="topbar-left">
+
+            <button class="mobile-menu" onclick="toggleSidebar()">
+                ☰
+            </button>
+
+            <div class="page-title">
+                Channels
+            </div>
+
+        </div>
+
+        <div class="topbar-right">
+
+            <div class="notification">
+                ♢
+                <span class="notification-dot"></span>
+            </div>
+
+            <div class="admin-profile">
+
+                <div class="admin-avatar">
+                    {% if current_user %}
+                        {{ current_user.full_name[:1]|upper }}
+                    {% else %}
+                        A
+                    {% endif %}
+                </div>
+
+                <div class="admin-info">
+                    <div class="admin-name">
+                        {% if current_user %}
+                            {{ current_user.full_name }}
+                        {% else %}
+                            Administrator
+                        {% endif %}
+                    </div>
+
+                    <div class="admin-role">
+                        Administrator
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+    </header>
+
+
+    <section class="content">
+
+        <!-- PAGE HEADING -->
+
+        <div class="page-heading">
+
+            <div>
+                <div class="heading-title">
+                    Channel Management
+                </div>
+
+                <div class="heading-subtitle">
+                    Manage KSS channels, owners, subscribers and verification.
+                </div>
+            </div>
+
+            <a href="{{ url_for('admin_create_channel') }}" class="primary-btn">
+                <span>＋</span>
+                Create Channel
+            </a>
+
+        </div>
+
+
+        <!-- STATISTICS -->
+
+        <div class="stats-grid">
+
+            <div class="stat-card">
+
+                <div class="stat-top">
+                    <div class="stat-label">Total Channels</div>
+                    <div class="stat-icon">◉</div>
+                </div>
+
+                <div class="stat-value">
+                    {{ channel_stats.total|default(0) }}
+                </div>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <div class="stat-top">
+                    <div class="stat-label">Active Channels</div>
+                    <div class="stat-icon">✓</div>
+                </div>
+
+                <div class="stat-value">
+                    {{ channel_stats.active|default(0) }}
+                </div>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <div class="stat-top">
+                    <div class="stat-label">Verified Channels</div>
+                    <div class="stat-icon">★</div>
+                </div>
+
+                <div class="stat-value">
+                    {{ channel_stats.verified|default(0) }}
+                </div>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <div class="stat-top">
+                    <div class="stat-label">Total Subscribers</div>
+                    <div class="stat-icon">♙</div>
+                </div>
+
+                <div class="stat-value">
+                    {{ "{:,}".format(channel_stats.subscribers|default(0)) }}
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- CHANNEL TABLE -->
+
+        <div class="panel">
+
+            <div class="filters">
+
+                <div class="search-box">
+                    <span>⌕</span>
+
+                    <input
+                        type="text"
+                        id="channelSearch"
+                        placeholder="Search channels or owners..."
+                        autocomplete="off"
+                    >
+                </div>
+
+                <select id="statusFilter" class="filter-select">
+                    <option value="all">All Status</option>
+                    <option value="active">Active</option>
+                    <option value="inactive">Inactive</option>
+                </select>
+
+                <select id="verificationFilter" class="filter-select">
+                    <option value="all">All Verification</option>
+                    <option value="verified">Verified</option>
+                    <option value="unverified">Unverified</option>
+                </select>
+
+                <button class="clear-btn" onclick="clearFilters()">
+                    Clear
+                </button>
+
+            </div>
+
+
+            <div class="table-wrap">
+
+                <table>
+
+                    <thead>
+                        <tr>
+                            <th>Channel</th>
+                            <th>Owner</th>
+                            <th>Subscribers</th>
+                            <th>Views</th>
+                            <th>Videos</th>
+                            <th>Status</th>
+                            <th>Verification</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="channelsTable">
+
+                        {% for channel in channels %}
+
+                        <tr
+                            class="channel-row"
+                            data-search="
+                                {{ channel.channel_name|lower }}
+                                {{ channel.slug|lower }}
+                                {{ (channel.owner_name or '')|lower }}
+                                {{ (channel.owner_email or '')|lower }}
+                            "
+                            data-status="{{ 'active' if channel.is_active else 'inactive' }}"
+                            data-verification="{{ 'verified' if channel.is_verified else 'unverified' }}"
+                        >
+
+                            <td>
+
+                                <div class="channel-cell">
+
+                                    {% if channel.channel_logo %}
+
+                                        <img
+                                            src="{{ channel.channel_logo }}"
+                                            class="channel-logo"
+                                            alt="{{ channel.channel_name }}"
+                                        >
+
+                                    {% else %}
+
+                                        <div class="channel-placeholder">
+                                            {{ channel.channel_name[:1]|upper }}
+                                        </div>
+
+                                    {% endif %}
+
+                                    <div>
+                                        <div class="channel-name">
+                                            {{ channel.channel_name }}
+                                        </div>
+
+                                        <div class="channel-slug">
+                                            /{{ channel.slug }}
+                                        </div>
+                                    </div>
+
+                                </div>
+
+                            </td>
+
+
+                            <td>
+
+                                <div class="owner">
+                                    {{ channel.owner_name or 'No owner' }}
+                                </div>
+
+                                {% if channel.owner_email %}
+                                <div class="owner-email">
+                                    {{ channel.owner_email }}
+                                </div>
+                                {% endif %}
+
+                            </td>
+
+
+                            <td>
+                                <span class="number">
+                                    {{ "{:,}".format(channel.subscriber_count or 0) }}
+                                </span>
+                            </td>
+
+
+                            <td>
+                                <span class="number">
+                                    {{ "{:,}".format(channel.total_views or 0) }}
+                                </span>
+                            </td>
+
+
+                            <td>
+                                <span class="number">
+                                    {{ "{:,}".format(channel.total_videos or 0) }}
+                                </span>
+                            </td>
+
+
+                            <td>
+
+                                {% if channel.is_active %}
+
+                                    <span class="status-badge status-active">
+                                        ● Active
+                                    </span>
+
+                                {% else %}
+
+                                    <span class="status-badge status-inactive">
+                                        ● Inactive
+                                    </span>
+
+                                {% endif %}
+
+                            </td>
+
+
+                            <td>
+
+                                {% if channel.is_verified %}
+
+                                    <span class="verification-badge verified">
+                                        ✓ Verified
+                                    </span>
+
+                                {% else %}
+
+                                    <span class="verification-badge not-verified">
+                                        ○ Unverified
+                                    </span>
+
+                                {% endif %}
+
+                            </td>
+
+
+                            <td>
+
+                                <div class="actions">
+
+                                    <a
+                                        href="{{ url_for('channel', slug=channel.slug) }}"
+                                        class="action-btn"
+                                        title="View channel"
+                                        target="_blank"
+                                    >
+                                        ↗
+                                    </a>
+
+                                    <a
+                                        href="{{ url_for('admin_create_channel', channel_id=channel.channel_id) }}"
+                                        class="action-btn"
+                                        title="Edit channel"
+                                    >
+                                        ✎
+                                    </a>
+
+                                    {% if channel.is_active %}
+
+                                        <button
+                                            type="button"
+                                            class="action-btn danger"
+                                            title="Deactivate channel"
+                                            onclick="openStatusModal(
+                                                {{ channel.channel_id }},
+                                                '{{ channel.channel_name|e }}',
+                                                false
+                                            )"
+                                        >
+                                            ×
+                                        </button>
+
+                                    {% else %}
+
+                                        <button
+                                            type="button"
+                                            class="action-btn success"
+                                            title="Activate channel"
+                                            onclick="openStatusModal(
+                                                {{ channel.channel_id }},
+                                                '{{ channel.channel_name|e }}',
+                                                true
+                                            )"
+                                        >
+                                            ✓
+                                        </button>
+
+                                    {% endif %}
+
+                                </div>
+
+                            </td>
+
+                        </tr>
+
+                        {% else %}
+
+                        <tr>
+                            <td colspan="8">
+
+                                <div class="empty-state">
+
+                                    <div class="empty-icon">
+                                        ◉
+                                    </div>
+
+                                    <div class="empty-title">
+                                        No channels yet
+                                    </div>
+
+                                    <div class="empty-text">
+                                        Create your first KSS channel to get started.
+                                    </div>
+
+                                </div>
+
+                            </td>
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </section>
+
+</main>
+
+
+<!-- =========================
+     STATUS MODAL
+========================= -->
+
+<div class="modal-overlay" id="statusModal">
+
+    <div class="modal">
+
+        <div class="modal-title" id="modalTitle">
+            Change channel status
+        </div>
+
+        <div class="modal-text" id="modalText">
+            Are you sure you want to change this channel's status?
+        </div>
+
+        <form id="statusForm" method="POST">
+
+            <div class="modal-actions">
+
+                <button
+                    type="button"
+                    class="modal-btn"
+                    onclick="closeStatusModal()"
+                >
+                    Cancel
+                </button>
+
+                <button
+                    type="submit"
+                    class="modal-btn confirm"
+                    id="modalConfirm"
+                >
+                    Confirm
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<script>
+
+    /* =========================
+       SIDEBAR
+    ========================= */
+
+    function toggleSidebar() {
+        document.getElementById("sidebar").classList.toggle("open");
+    }
+
+
+    /* =========================
+       SEARCH + FILTER
+    ========================= */
+
+    const searchInput = document.getElementById("channelSearch");
+    const statusFilter = document.getElementById("statusFilter");
+    const verificationFilter = document.getElementById("verificationFilter");
+
+    searchInput.addEventListener("input", filterChannels);
+    statusFilter.addEventListener("change", filterChannels);
+    verificationFilter.addEventListener("change", filterChannels);
+
+
+    function filterChannels() {
+
+        const search = searchInput.value
+            .trim()
+            .toLowerCase();
+
+        const status = statusFilter.value;
+        const verification = verificationFilter.value;
+
+        const rows = document.querySelectorAll(".channel-row");
+
+        rows.forEach(row => {
+
+            const searchableText =
+                row.dataset.search || "";
+
+            const rowStatus =
+                row.dataset.status || "";
+
+            const rowVerification =
+                row.dataset.verification || "";
+
+            const matchesSearch =
+                !search ||
+                searchableText.includes(search);
+
+            const matchesStatus =
+                status === "all" ||
+                rowStatus === status;
+
+            const matchesVerification =
+                verification === "all" ||
+                rowVerification === verification;
+
+            row.style.display =
+                matchesSearch &&
+                matchesStatus &&
+                matchesVerification
+                    ? ""
+                    : "none";
+        });
+    }
+
+
+    function clearFilters() {
+
+        searchInput.value = "";
+        statusFilter.value = "all";
+        verificationFilter.value = "all";
+
+        filterChannels();
+    }
+
+
+    /* =========================
+       STATUS MODAL
+    ========================= */
+
+    function openStatusModal(channelId, channelName, activate) {
+
+        const modal =
+            document.getElementById("statusModal");
+
+        const title =
+            document.getElementById("modalTitle");
+
+        const text =
+            document.getElementById("modalText");
+
+        const form =
+            document.getElementById("statusForm");
+
+        const confirm =
+            document.getElementById("modalConfirm");
+
+        if (activate) {
+
+            title.textContent =
+                "Activate channel";
+
+            text.textContent =
+                `Are you sure you want to activate "${channelName}"?`;
+
+            confirm.textContent =
+                "Activate";
+
+            confirm.classList.add("activate");
+
+        } else {
+
+            title.textContent =
+                "Deactivate channel";
+
+            text.textContent =
+                `Are you sure you want to deactivate "${channelName}"?`;
+
+            confirm.textContent =
+                "Deactivate";
+
+            confirm.classList.remove("activate");
+        }
+
+        form.action =
+            `/admin/channels/${channelId}/toggle-status`;
+
+        modal.classList.add("show");
+    }
+
+
+    function closeStatusModal() {
+
+        document
+            .getElementById("statusModal")
+            .classList.remove("show");
+    }
+
+
+    document
+        .getElementById("statusModal")
+        .addEventListener("click", function(event) {
+
+            if (event.target === this) {
+                closeStatusModal();
+            }
+
+        });
+
+
+    document.addEventListener("keydown", function(event) {
+
+        if (event.key === "Escape") {
+            closeStatusModal();
+        }
+
+    });
+
+</script>
+
+</body>
+</html>
+```

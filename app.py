@@ -58,17 +58,39 @@ else:
 # DATABASE (pooled)
 # ============================================================
 
+DB_HOST = os.getenv('DB_HOST', 'localhost')
+DB_PORT = int(os.getenv('DB_PORT', '3306'))
+DB_USER = os.getenv('DB_USER', 'root')
+DB_PASSWORD = os.getenv('DB_PASSWORD', '')
+DB_NAME = os.getenv('DB_NAME', 'kss')
+
+# Cloud MySQL providers (PlanetScale, Aiven, Railway, DO) require TLS.
+# Set DB_SSL_DISABLED=1 only for a DB on the same private network.
+DB_SSL_DISABLED = os.getenv('DB_SSL_DISABLED', '0') == '1'
+
 DB_CONFIG = {
-    'host': os.getenv('DB_HOST', 'localhost'),
-    'port': int(os.getenv('DB_PORT', '3306')),
-    'user': os.getenv('DB_USER', 'root'),
-    'password': os.getenv('DB_PASSWORD', ''),
-    'database': os.getenv('DB_NAME', 'kss'),
+    'host': DB_HOST,
+    'port': DB_PORT,
+    'user': DB_USER,
+    'password': DB_PASSWORD,
+    'database': DB_NAME,
+    'connection_timeout': 8,      # fail fast instead of hanging
+    'autocommit': False,
+    'use_pure': True,             # pure-Python path; C extension has 3.14 bugs
 }
+
+if not DB_SSL_DISABLED:
+    # Point the connector at certifi's CA bundle. On Linux containers,
+    # the default system CA store may not exist, causing the connector
+    # to hang or raise during SSL setup.
+    DB_CONFIG['ssl_ca'] = certifi.where()
+    DB_CONFIG['ssl_verify_cert'] = True
+
+
 
 # Tune to MySQL max_connections minus what admin tools need.
 # 20 is a safe default for a small VPS.
-DB_POOL_SIZE = int(os.getenv('DB_POOL_SIZE', '20'))
+DB_POOL_SIZE = int(os.getenv('DB_POOL_SIZE', '5'))
 
 _pool = None
 
@@ -80,9 +102,20 @@ def get_pool():
             pool_name="kss_pool",
             pool_size=DB_POOL_SIZE,
             pool_reset_session=True,
-            **DB_CONFIG
+            **DB_CONFIG,
         )
     return _pool
+
+
+def init_pool():
+    """Warm the pool at import time so the first request doesn't hang."""
+    try:
+        get_pool()
+        print(f"DB pool ready ({DB_POOL_SIZE} connections).")
+    except Error as e:
+        # Don't crash the app if the DB is briefly unreachable — let
+        # requests retry and surface the error where it's visible.
+        print(f"DB pool warmup failed: {e}")
 
 
 def get_db_connection():
@@ -3422,6 +3455,20 @@ def health():
 # ============================================================
 # ENTRY POINT (dev only — use gunicorn in production)
 # ============================================================
+
+
+# Warm the pool at import time (gunicorn imports this module once per worker).
+init_pool()
+
+
+if __name__ == '__main__':
+    app.run(
+        host='0.0.0.0',
+        port=int(os.getenv('PORT', '5003')),
+        debug=False,
+    )
+
+
 
 if __name__ == '__main__':
     # NEVER use debug=True in production.

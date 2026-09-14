@@ -45,6 +45,11 @@
             color-scheme: dark;
         }
 
+        html, body {
+            overflow-x: hidden;
+            max-width: 100%;
+        }
+
         body {
             margin: 0;
             background: var(--bg);
@@ -157,17 +162,45 @@
 
         .player-wrap {
             position: relative;
+            user-select: none;
+
+            /* Full-bleed: break the player out of .page's centered
+               max-width so it spans the true viewport edge-to-edge,
+               regardless of how narrow/wide .page itself is. */
+            width: 100vw;
+            left: 50%;
+            right: 50%;
+            margin-left: -50vw;
+            margin-right: -50vw;
+        }
+
+        .player-frame {
+            position: relative;
             background: #000;
-            border-radius: var(--radius-lg);
             overflow: hidden;
             border: 1px solid var(--border);
             aspect-ratio: 16/9;
-            user-select: none;
+            border-radius: 0;
         }
 
         .player-wrap:fullscreen {
+            left: auto;
+            right: auto;
+            margin: 0;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .player-wrap:fullscreen .player-frame {
             border-radius: 0;
             aspect-ratio: auto;
+            flex: 1;
+            border: 0;
+        }
+
+        .desktop-window-chrome {
+            display: none;
         }
 
         video {
@@ -1175,7 +1208,10 @@
                 grid-template-columns: 1fr;
             }
 
+            .main-col { order: 1; }
+            #commentsSection { order: 2; }
             .sidebar, .layout.theater .sidebar {
+                order: 3;
                 display: grid;
                 grid-template-columns: repeat(2, 1fr);
                 gap: 14px;
@@ -1243,11 +1279,12 @@
                 gap: 0;
             }
 
-            body.sheet-open .layout > section {
-                flex: 1;
+            body.sheet-open .layout > .main-col {
+                flex-shrink: 0;
                 display: flex;
                 flex-direction: column;
                 min-height: 0;
+                order: 1;
             }
 
             body.sheet-open .player-wrap {
@@ -1257,6 +1294,10 @@
                 border-left: 0;
                 border-right: 0;
                 border-top: 0;
+                left: auto;
+                right: auto;
+                margin-left: 0;
+                margin-right: 0;
             }
 
             body.sheet-open .video-info,
@@ -1276,6 +1317,7 @@
                 padding: 0 16px 60px;
                 border-top: 1px solid var(--border);
                 background: var(--bg);
+                order: 2;
             }
 
             body.sheet-open .comments-sheet-header {
@@ -1333,6 +1375,211 @@
             }
         }
 
+        /* ============================================================
+           Desktop-only redesign: floating glass panels over a soft,
+           blurred ambient scene — three docked windows (comments,
+           player, up next) instead of the flat dark page.
+           Everything above this block still governs tablet/mobile.
+           ============================================================ */
+
+        @media (min-width: 1001px) {
+
+            :root {
+                --glass: rgba(255,255,255,.06);
+                --glass-strong: rgba(255,255,255,.11);
+                --glass-border: rgba(255,255,255,.16);
+                --glass-blur: blur(34px) saturate(160%);
+            }
+
+            html, body {
+                background: #030304;
+            }
+
+            body {
+                background-image:
+                    radial-gradient(1000px 560px at 18% -8%, rgba(255,255,255,.14), transparent 60%),
+                    radial-gradient(760px 640px at 104% 6%, rgba(255,190,130,.11), transparent 55%),
+                    radial-gradient(900px 720px at 46% 118%, rgba(90,190,255,.10), transparent 60%),
+                    linear-gradient(180deg, #101013 0%, #08080a 55%, #030304 100%);
+                background-attachment: fixed;
+                background-repeat: no-repeat;
+            }
+
+            /* ---- Floating pill nav, like the browser chrome in the reference ---- */
+
+            nav {
+                position: fixed;
+                top: 18px;
+                left: 50%;
+                transform: translateX(-50%);
+                height: 54px;
+                width: auto;
+                padding: 0 10px 0 22px;
+                gap: 26px;
+                border-radius: 999px;
+                border: 1px solid var(--glass-border);
+                background: var(--glass);
+                backdrop-filter: var(--glass-blur);
+                -webkit-backdrop-filter: var(--glass-blur);
+                box-shadow: 0 18px 44px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.14);
+            }
+
+            .nav-links a:hover { background: rgba(255,255,255,.12); }
+
+            .page {
+                margin-top: 96px;
+                width: min(1520px, 94%);
+            }
+
+            /* ---- Three-column dock: comments / player / up next ---- */
+
+            .layout {
+                grid-template-columns: 300px minmax(0, 1fr) 340px;
+                gap: 22px;
+            }
+
+            .layout.theater {
+                grid-template-columns: 1fr;
+            }
+
+            .layout.theater .main-col { order: 1; }
+
+            .layout.theater #commentsSection {
+                order: 2;
+                position: static;
+                max-height: none;
+                margin-top: 22px;
+            }
+
+            .layout.theater .sidebar {
+                order: 3;
+                position: static;
+                max-height: none;
+                margin-top: 22px;
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 16px;
+            }
+
+            /* ---- Glass window styling shared by the two rails ---- */
+
+            #commentsSection,
+            .sidebar {
+                position: sticky;
+                top: 96px;
+                max-height: calc(100vh - 116px);
+                overflow-y: auto;
+                background: var(--glass);
+                border: 1px solid var(--glass-border);
+                border-radius: 26px;
+                backdrop-filter: var(--glass-blur);
+                -webkit-backdrop-filter: var(--glass-blur);
+                box-shadow: 0 24px 56px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.09);
+                padding: 20px;
+            }
+
+            #commentsSection { margin-top: 0; border-top: none; padding-top: 20px; }
+            #commentsSection .comments-heading { padding-bottom: 2px; }
+
+            .suggestion:hover { background: rgba(255,255,255,.08); }
+
+            .comment-form input { background: rgba(0,0,0,.28); }
+
+            /* ---- Player: a contained floating window, not full-bleed ---- */
+
+            .player-wrap {
+                width: auto;
+                left: auto;
+                right: auto;
+                margin-left: 0;
+                margin-right: 0;
+            }
+
+            .player-frame {
+                border-radius: 24px;
+                border: 1px solid var(--glass-border);
+                box-shadow: 0 30px 70px rgba(0,0,0,.55), inset 0 1px 0 rgba(255,255,255,.10);
+            }
+
+            .player-wrap:fullscreen {
+                border-radius: 0;
+            }
+
+            .player-wrap:fullscreen .player-frame {
+                border-radius: 0;
+                border: 0;
+            }
+
+            .player-wrap:fullscreen .controls {
+                display: none;
+            }
+
+            /* Window chrome bar across the top of the video, like the
+               reference's "Expand / •••" title bar. */
+
+            .desktop-window-chrome {
+                display: flex;
+                position: absolute;
+                top: 14px;
+                left: 14px;
+                right: 14px;
+                z-index: 5;
+                align-items: center;
+                justify-content: space-between;
+                pointer-events: none;
+            }
+
+            .chrome-expand {
+                display: inline-flex;
+                align-items: center;
+                gap: 6px;
+                padding: 7px 14px;
+                border-radius: 999px;
+                background: rgba(20,20,24,.5);
+                backdrop-filter: blur(10px);
+                -webkit-backdrop-filter: blur(10px);
+                color: rgba(255,255,255,.85);
+                font-size: 12.5px;
+                font-weight: 650;
+            }
+
+            .chrome-expand svg { width: 13px; height: 13px; }
+
+            .chrome-dots {
+                padding: 7px 12px;
+                border-radius: 999px;
+                background: rgba(20,20,24,.5);
+                backdrop-filter: blur(10px);
+                -webkit-backdrop-filter: blur(10px);
+                color: rgba(255,255,255,.7);
+                font-size: 12px;
+                letter-spacing: 1px;
+            }
+
+            /* ---- Controls: detach into their own floating pill bar
+               beneath the video, always visible (no auto-hide) ---- */
+
+            .controls {
+                position: static;
+                margin-top: 16px;
+                padding: 10px 16px;
+                border-radius: 999px;
+                background: var(--glass-strong);
+                border: 1px solid var(--glass-border);
+                backdrop-filter: var(--glass-blur);
+                -webkit-backdrop-filter: var(--glass-blur);
+                box-shadow: 0 18px 40px rgba(0,0,0,.4), inset 0 1px 0 rgba(255,255,255,.12);
+                opacity: 1 !important;
+                transform: none !important;
+            }
+
+            .scrubber { margin-bottom: 2px; }
+
+            .video-info {
+                padding: 20px 4px 6px;
+            }
+        }
+
     </style>
 
     <!-- HLS support -->
@@ -1380,12 +1627,147 @@
 
     <div class="layout" id="layout">
 
-        <section>
+        <section class="comments" id="commentsSection">
+
+            <!-- Sheet header: only visible when the mobile sheet is open -->
+            <div class="comments-sheet-header">
+                <button
+                    class="comments-sheet-close"
+                    type="button"
+                    onclick="closeCommentsSheet()"
+                    aria-label="Close comments"
+                >
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                        <path d="M6 6l12 12M18 6L6 18"/>
+                    </svg>
+                </button>
+                <span class="comments-sheet-title">Comments</span>
+                <span class="comments-sheet-count">{{ video.total_comments or 0 }}</span>
+            </div>
+
+            <div class="comments-heading">
+                Comments
+                <span>{{ video.total_comments or 0 }}</span>
+            </div>
+
+            {% if current_user %}
+
+                <div class="comment-form">
+
+                    <div class="channel-avatar">
+                        {{ (current_user.full_name or current_user.username or "?")[0]|upper }}
+                    </div>
+
+                    <div class="comment-input-wrap">
+
+                        <input
+                            id="commentInput"
+                            type="text"
+                            maxlength="1000"
+                            placeholder="Add a comment..."
+                            oninput="onCommentInput()"
+                            onkeydown="if(event.key==='Enter'){postComment();}"
+                        >
+
+                        <div class="comment-form-actions">
+                            <span class="char-count" id="charCount">0 / 1000</span>
+                            <button id="commentSubmitBtn" onclick="postComment()" disabled>Comment</button>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            {% else %}
+
+                <div class="login-comment">
+                    <a
+                        href="{{ url_for(
+                            'login',
+                            next=request.path
+                        ) }}"
+                    >
+                        Sign in
+                    </a>
+                    to leave a comment.
+                </div>
+
+            {% endif %}
+
+
+            <div id="commentsList">
+
+                {% for comment in comments %}
+
+                    <div class="comment">
+
+                        <div class="channel-avatar">
+                            {% if comment.profile_image %}
+                                <img src="{{ comment.profile_image }}" alt="">
+                            {% else %}
+                                {{ (comment.full_name or comment.username or "?")[0]|upper }}
+                            {% endif %}
+                        </div>
+
+                        <div class="comment-body">
+
+                            <div class="comment-user">
+                                {{ comment.full_name or comment.username }}
+                            </div>
+
+                            <div class="comment-text">
+                                {{ comment.comment_text }}
+                            </div>
+
+                            <div class="comment-date">
+                                {{ comment.created_at }}
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                {% else %}
+
+                    <div
+                        class="empty-comments"
+                        id="emptyComments"
+                    >
+                        No comments yet. Be the first to say something.
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
+            <button
+                id="commentsToggle"
+                class="comments-toggle"
+                type="button"
+                style="display: none;"
+                onclick="toggleComments()"
+            >
+                View all comments
+            </button>
+
+        </section>
+
+        <section class="main-col">
 
             <div class="player-wrap" id="playerWrap">
 
+              <div class="player-frame" id="playerFrame">
+
                 <div class="title-overlay" id="titleOverlay">
                     {{ video.title }}
+                </div>
+
+                <div class="desktop-window-chrome">
+                    <span class="chrome-expand" id="chromeExpand">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
+                        Expand
+                    </span>
+                    <span class="chrome-dots">•••</span>
                 </div>
 
                 <video
@@ -1443,6 +1825,8 @@
                         </div>
                     </div>
                 </div>
+
+              </div>
 
                 <div class="controls" id="controls">
 
@@ -1657,139 +2041,13 @@
                 <span class="count">{{ video.total_comments or 0 }}</span>
             </button>
 
-
-            <section class="comments" id="commentsSection">
-
-                <!-- Sheet header: only visible when the mobile sheet is open -->
-                <div class="comments-sheet-header">
-                    <button
-                        class="comments-sheet-close"
-                        type="button"
-                        onclick="closeCommentsSheet()"
-                        aria-label="Close comments"
-                    >
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-                            <path d="M6 6l12 12M18 6L6 18"/>
-                        </svg>
-                    </button>
-                    <span class="comments-sheet-title">Comments</span>
-                    <span class="comments-sheet-count">{{ video.total_comments or 0 }}</span>
-                </div>
-
-                <div class="comments-heading">
-                    Comments
-                    <span>{{ video.total_comments or 0 }}</span>
-                </div>
-
-                {% if current_user %}
-
-                    <div class="comment-form">
-
-                        <div class="channel-avatar">
-                            {{ (current_user.full_name or current_user.username or "?")[0]|upper }}
-                        </div>
-
-                        <div class="comment-input-wrap">
-
-                            <input
-                                id="commentInput"
-                                type="text"
-                                maxlength="1000"
-                                placeholder="Add a comment..."
-                                oninput="onCommentInput()"
-                                onkeydown="if(event.key==='Enter'){postComment();}"
-                            >
-
-                            <div class="comment-form-actions">
-                                <span class="char-count" id="charCount">0 / 1000</span>
-                                <button id="commentSubmitBtn" onclick="postComment()" disabled>Comment</button>
-                            </div>
-
-                        </div>
-
-                    </div>
-
-                {% else %}
-
-                    <div class="login-comment">
-                        <a
-                            href="{{ url_for(
-                                'login',
-                                next=request.path
-                            ) }}"
-                        >
-                            Sign in
-                        </a>
-                        to leave a comment.
-                    </div>
-
-                {% endif %}
-
-
-                <div id="commentsList">
-
-                    {% for comment in comments %}
-
-                        <div class="comment">
-
-                            <div class="channel-avatar">
-                                {% if comment.profile_image %}
-                                    <img src="{{ comment.profile_image }}" alt="">
-                                {% else %}
-                                    {{ (comment.full_name or comment.username or "?")[0]|upper }}
-                                {% endif %}
-                            </div>
-
-                            <div class="comment-body">
-
-                                <div class="comment-user">
-                                    {{ comment.full_name or comment.username }}
-                                </div>
-
-                                <div class="comment-text">
-                                    {{ comment.comment_text }}
-                                </div>
-
-                                <div class="comment-date">
-                                    {{ comment.created_at }}
-                                </div>
-
-                            </div>
-
-                        </div>
-
-                    {% else %}
-
-                        <div
-                            class="empty-comments"
-                            id="emptyComments"
-                        >
-                            No comments yet. Be the first to say something.
-                        </div>
-
-                    {% endfor %}
-
-                </div>
-
-                <button
-                    id="commentsToggle"
-                    class="comments-toggle"
-                    type="button"
-                    style="display: none;"
-                    onclick="toggleComments()"
-                >
-                    View all comments
-                </button>
-
-            </section>
-
         </section>
 
 
         <aside class="sidebar">
 
             <div class="sidebar-title">
-                Up next
+                More from this channel
                 <button class="theater-toggle" id="theaterToggle" onclick="toggleTheater()">Theater</button>
             </div>
 
@@ -2996,10 +3254,16 @@
     });
 
     // 8. DevTools-open heuristic pause.
-    // Imperfect and defeatable by anyone who knows to undock devtools first,
-    // but stops casual attempts via the inspector / network tab.
+    // Desktop-only: window.outerWidth/outerHeight are unreliable on mobile
+    // (dynamic address bars/toolbars, some WebViews reporting 0), which was
+    // causing false positives that paused playback right after it started
+    // — e.g. the center play button appearing to "not work" on phones.
+    // Devtools-via-resize isn't a meaningful mobile concern anyway.
 
     (function watchForDevTools() {
+        const isTouchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+        if (isTouchDevice) return;
+
         const threshold = 160;
         let devtoolsOpen = false;
 

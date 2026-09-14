@@ -19,22 +19,22 @@
 <style>
 
 :root {
-    --bg: #050a0d;
-    --surface: #0b1519;
-    --surface2: #101f25;
-    --border: rgba(255,255,255,.08);
-    --border-strong: rgba(255,255,255,.2);
-    --text: #f5f8f9;
-    --muted: #8ea2a9;
-    --muted-dim: #5c6e74;
-    --accent: #16c6b4;
-    --accent2: #23ddca;
-    --accent-dim: #0f8f82;
+    --bg: #161616;
+    --surface: #202020;
+    --surface2: #292929;
+    --border: rgba(255,255,255,.10);
+    --border-strong: rgba(255,255,255,.24);
+    --text: #f5f5f5;
+    --muted: #a3a3a3;
+    --muted-dim: #6b6b6b;
+    --accent: #e01e37;
+    --accent2: #ff3b57;
+    --accent-deep: #8f1224;
     --serif: "Fraunces", Georgia, serif;
     --sans: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
     --page-pad: 5%;
-    --nav-h: 66px;
-    --hero-max-h: 72vh;
+    --nav-h: 68px;
+    --hero-max-h: 76vh;
 }
 
 * {
@@ -53,9 +53,13 @@ html, body {
 }
 
 body {
-    background: var(--bg);
+    background-color: var(--bg);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E");
+    background-repeat: repeat;
+    background-blend-mode: overlay;
     color: var(--text);
     font-family: var(--sans);
+    -webkit-font-smoothing: antialiased;
 }
 
 img,
@@ -66,6 +70,18 @@ video {
 
 a {
     color: inherit;
+}
+
+:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: .01ms !important;
+        transition-duration: .01ms !important;
+    }
 }
 
 /* ============ NAV ============ */
@@ -82,25 +98,34 @@ nav {
     align-items: center;
     justify-content: space-between;
     gap: 12px;
-    background: rgba(14,12,9,.82);
+    background: rgba(20,17,13,.85);
     border-bottom: 1px solid var(--border);
     backdrop-filter: blur(14px);
     -webkit-backdrop-filter: blur(14px);
 }
 
 .logo {
+    display: flex;
+    align-items: center;
+    gap: 7px;
     font-family: var(--serif);
     color: var(--text);
     text-decoration: none;
-    font-size: 24px;
-    font-weight: 600;
-    letter-spacing: .5px;
+    font-size: 23px;
+    font-weight: 700;
+    letter-spacing: .2px;
     line-height: 1;
     flex-shrink: 0;
 }
 
 .logo span {
     color: var(--accent);
+}
+
+.logo-play {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
 }
 
 .nav-center {
@@ -121,7 +146,7 @@ nav {
 
 .nav-center a:hover {
     color: var(--text);
-    border-bottom-color: var(--accent-dim);
+    border-bottom-color: var(--accent);
 }
 
 .nav-right {
@@ -142,7 +167,7 @@ nav {
 }
 
 .register:hover {
-    border-color: var(--accent-dim);
+    border-color: var(--accent);
     color: var(--accent) !important;
 }
 
@@ -162,19 +187,17 @@ nav {
     inset: 0;
     width: 100%;
     height: 100%;
-    fill: #e21f1f;
+    fill: var(--accent);
     transition: fill .15s ease;
 }
 
 .nav-avatar-letter {
     position: relative;
     z-index: 1;
-    color: #000;
+    color: var(--text);
     font-family: var(--serif);
     font-weight: 700;
     font-size: 14px;
-    /* nudge to sit visually centered inside the triangle's body, left of the tip */
-    transform: translateX(-3px);
 }
 
 @media (hover: hover) and (pointer: fine) {
@@ -184,7 +207,7 @@ nav {
     }
 
     .nav-avatar:hover .nav-avatar-shape {
-        fill: #ff3b3b;
+        fill: var(--accent2);
     }
 
 }
@@ -198,47 +221,7 @@ nav {
 .nav-avatar:active .nav-avatar-shape,
 .nav-avatar:focus .nav-avatar-shape,
 .nav-avatar:focus:not(:focus-visible) .nav-avatar-shape {
-    fill: #e21f1f;
-}
-
-@media (hover: hover) and (pointer: fine) {
-
-    .nav-avatar:hover {
-        background: var(--accent);
-        border-color: var(--accent);
-        transform: scale(1.06);
-    }
-
-}
-
-/* Keep the resting look on click/tap/focus, same as the play
-   button, so it never recolors or gets stuck on touch devices. */
-.nav-avatar:active,
-.nav-avatar:focus,
-.nav-avatar:focus:not(:focus-visible) {
-    background: rgba(5,10,13,.55);
-    border-color: rgba(255,255,255,.35);
-    transform: none;
-}
-
-@media (hover: hover) and (pointer: fine) {
-
-    .nav-avatar:hover {
-        background: #dc2626;
-        border-color: #dc2626;
-        transform: scale(1.06);
-    }
-
-}
-
-/* Keep the resting look on click/tap/focus, same as the play
-   button, so it never recolors or gets stuck on touch devices. */
-.nav-avatar:active,
-.nav-avatar:focus,
-.nav-avatar:focus:not(:focus-visible) {
-    background: rgba(220, 38, 38, .85);
-    border-color: rgba(255,255,255,.35);
-    transform: none;
+    fill: var(--accent);
 }
 
 /* ============ HERO ============ */
@@ -262,15 +245,21 @@ nav {
     display: block;
 }
 
+.hero-frame {
+    position: relative;
+    padding: 14px var(--page-pad) 0;
+}
+
 .hero-visual {
     position: relative;
     width: 100%;
-    max-width: calc(var(--hero-max-h) * 16 / 9); /* caps effective height via width */
+    max-width: calc(var(--hero-max-h) * 16 / 9);
     aspect-ratio: 16 / 9;
     margin: 0 auto;
     min-height: 220px;
     overflow: hidden;
     background: var(--surface2);
+    border: 1px solid var(--border-strong);
 }
 
 .hero-bg {
@@ -281,12 +270,39 @@ nav {
     object-fit: cover;
     object-position: center 35%;
     display: block;
+    filter: saturate(1.04);
+}
+
+/* corner tick marks, like a screening-room matte */
+.hero-visual::before {
+    content: "";
+    position: absolute;
+    inset: 10px;
+    z-index: 2;
+    pointer-events: none;
+    background-image:
+        linear-gradient(var(--accent), var(--accent)),
+        linear-gradient(var(--accent), var(--accent)),
+        linear-gradient(var(--accent), var(--accent)),
+        linear-gradient(var(--accent), var(--accent)),
+        linear-gradient(var(--accent), var(--accent)),
+        linear-gradient(var(--accent), var(--accent)),
+        linear-gradient(var(--accent), var(--accent)),
+        linear-gradient(var(--accent), var(--accent));
+    background-repeat: no-repeat;
+    background-size: 18px 2px, 2px 18px, 18px 2px, 2px 18px, 18px 2px, 2px 18px, 18px 2px, 2px 18px;
+    background-position:
+        top left, top left,
+        top right, top right,
+        bottom left, bottom left,
+        bottom right, bottom right;
+    opacity: .8;
 }
 
 .hero-play {
     position: absolute;
     inset: 0;
-    z-index: 2;
+    z-index: 3;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -299,8 +315,8 @@ nav {
     border-radius: 50%;
     display: grid;
     place-items: center;
-    background: rgba(5,10,13,.55);
-    border: 1px solid rgba(255,255,255,.35);
+    background: rgba(20,17,13,.6);
+    border: 1px solid rgba(247,238,222,.35);
     backdrop-filter: blur(4px);
     -webkit-backdrop-filter: blur(4px);
     transition: background .15s ease, transform .15s ease, border-color .15s ease;
@@ -322,18 +338,16 @@ nav {
     }
 
     .hero-play:hover .hero-play-icon svg {
-        fill: #1a1002;
+        fill: var(--text);
     }
 
 }
 
-/* Force the resting look on click/tap/focus so it never
-   flashes or gets stuck in the hover color on touch devices. */
 .hero-play:active .hero-play-icon,
 .hero-play:focus .hero-play-icon,
 .hero-play:focus:not(:focus-visible) .hero-play-icon {
-    background: rgba(5,10,13,.55);
-    border-color: rgba(255,255,255,.35);
+    background: rgba(20,17,13,.6);
+    border-color: rgba(247,238,222,.35);
     transform: none;
 }
 
@@ -357,35 +371,31 @@ nav {
 
 }
 
-/* Soft bottom fade so the image melts into the text below. */
 .hero-visual::after {
     content: "";
     position: absolute;
     left: 0;
     right: 0;
     bottom: 0;
-    height: 35%;
-    background: linear-gradient(to bottom, transparent, rgba(5,10,13,.55));
+    height: 40%;
+    background: linear-gradient(to bottom, transparent, rgba(20,17,13,.6));
     pointer-events: none;
     z-index: 1;
 }
 
 .hero-content {
     position: relative;
-    padding: 24px var(--page-pad) 28px;
+    padding: 26px var(--page-pad) 30px;
     background: var(--bg);
-    border-bottom: 1px solid var(--border);
 }
 
 .hero-eyebrow {
-    font-size: 12px;
+    font-family: var(--serif);
+    font-style: italic;
+    font-weight: 500;
+    font-size: 15px;
     color: var(--accent);
     margin: 0 0 10px;
-}
-
-.hero-eyebrow em {
-    font-style: normal;
-    color: var(--muted);
 }
 
 .hero-content h1 {
@@ -394,7 +404,7 @@ nav {
     font-size: clamp(24px, 5.5vw, 44px);
     line-height: 1.1;
     letter-spacing: -.5px;
-    margin: 0 0 18px;
+    margin: 0 0 20px;
     max-width: 22ch;
 }
 
@@ -416,11 +426,12 @@ nav {
     border-radius: 3px;
     border: 1px solid transparent;
     white-space: nowrap;
+    transition: background .15s ease, border-color .15s ease, color .15s ease;
 }
 
 .btn-primary {
     background: var(--accent);
-    color: #1a1002;
+    color: var(--text);
 }
 
 .btn-primary:hover {
@@ -433,25 +444,26 @@ nav {
 }
 
 .btn-secondary:hover {
-    border-color: var(--accent-dim);
+    border-color: var(--accent);
     color: var(--accent);
 }
 
 .hero-dots {
     display: flex;
     gap: 6px;
-    padding: 14px var(--page-pad);
+    padding: 0 var(--page-pad) 22px;
     background: var(--bg);
 }
 
 .hero-dot {
-    height: 3px;
+    height: 2px;
     flex: 1;
     max-width: 40px;
     border: none;
     background: var(--border-strong);
     cursor: pointer;
     padding: 0;
+    transition: background .15s ease;
 }
 
 .hero-dot.active {
@@ -461,7 +473,7 @@ nav {
 @media (min-width: 700px) {
 
     .hero-content {
-        padding: 30px var(--page-pad) 36px;
+        padding: 32px var(--page-pad) 38px;
     }
 
 }
@@ -469,7 +481,7 @@ nav {
 @media (min-width: 1100px) {
 
     .hero-content {
-        padding: 36px var(--page-pad) 44px;
+        padding: 38px var(--page-pad) 46px;
         max-width: 900px;
     }
 
@@ -487,7 +499,7 @@ nav {
 }
 
 .section {
-    padding: 52px 0 0;
+    padding: 56px 0 0;
 }
 
 .section-head {
@@ -495,8 +507,8 @@ nav {
     align-items: baseline;
     justify-content: space-between;
     gap: 16px;
-    margin-bottom: 24px;
-    padding-bottom: 14px;
+    margin-bottom: 26px;
+    padding-bottom: 16px;
     border-bottom: 1px solid var(--border);
     flex-wrap: wrap;
 }
@@ -512,7 +524,7 @@ nav {
 .section-head .sub {
     color: var(--muted-dim);
     font-size: 13px;
-    margin-top: 4px;
+    margin-top: 5px;
 }
 
 .section-head a {
@@ -522,11 +534,12 @@ nav {
     white-space: nowrap;
     border-bottom: 1px solid var(--border-strong);
     padding-bottom: 2px;
+    transition: color .15s ease, border-color .15s ease;
 }
 
 .section-head a:hover {
     color: var(--accent);
-    border-color: var(--accent-dim);
+    border-color: var(--accent);
 }
 
 .section-head-actions {
@@ -571,7 +584,7 @@ nav {
 }
 
 .search-form.open {
-    border-color: var(--accent-dim);
+    border-color: var(--accent);
 }
 
 .search-form.open .search-toggle {
@@ -616,7 +629,7 @@ nav {
 .grid {
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 22px 20px;
+    gap: 26px 20px;
 }
 
 .card {
@@ -631,6 +644,7 @@ nav {
     overflow: hidden;
     background: var(--surface2);
     border: 1px solid var(--border);
+    transition: border-color .15s ease, box-shadow .2s ease;
 }
 
 .thumbnail img {
@@ -638,13 +652,27 @@ nav {
     height: 100%;
     object-fit: cover;
     display: block;
+    transition: transform .3s ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+
+    .card:hover .thumbnail {
+        border-color: var(--border-strong);
+        box-shadow: 0 0 0 1px rgba(224,30,55,.25), 0 14px 30px -14px rgba(224,30,55,.35);
+    }
+
+    .card:hover .thumbnail img {
+        transform: scale(1.035);
+    }
+
 }
 
 .duration {
     position: absolute;
     right: 7px;
     bottom: 7px;
-    background: rgba(14,12,9,.85);
+    background: rgba(20,17,13,.88);
     color: var(--text);
     padding: 3px 6px;
     font-size: 11px;
@@ -652,7 +680,7 @@ nav {
 }
 
 .card-info {
-    padding: 12px 0 0;
+    padding: 13px 0 0;
 }
 
 .card-title {
@@ -669,7 +697,7 @@ nav {
 
 .card-channel {
     color: var(--muted);
-    margin-top: 6px;
+    margin-top: 7px;
     font-size: 12px;
 }
 
@@ -685,7 +713,7 @@ nav {
     top: 7px;
     padding: 3px 7px;
     background: var(--bg);
-    border: 1px solid var(--accent-dim);
+    border: 1px solid var(--accent);
     color: var(--accent);
     font-size: 10px;
     font-weight: 600;
@@ -704,9 +732,9 @@ nav {
     height: 26px;
     display: grid;
     place-items: center;
-    background: rgba(14,12,9,.85);
+    background: rgba(20,17,13,.88);
     border: 1px solid var(--border-strong);
-    color: var(--text);
+    color: var(--accent-deep);
     font-size: 12px;
 }
 
@@ -728,11 +756,12 @@ nav {
     text-decoration: none;
     font-size: 14px;
     border-bottom: 2px solid transparent;
+    transition: color .15s ease, border-color .15s ease;
 }
 
 .category:hover {
     color: var(--text);
-    border-color: var(--accent-dim);
+    border-color: var(--accent);
 }
 
 /* ============ CHANNELS ============ */
@@ -743,22 +772,55 @@ nav {
 }
 
 .channel-row {
+    position: relative;
     display: flex;
     align-items: center;
     gap: 18px;
-    padding: 16px 0;
+    padding: 18px 0 18px 18px;
     border-top: 1px solid var(--border);
     text-decoration: none;
     color: var(--text);
+    transition: padding-left .18s ease;
+}
+
+.channel-row::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: var(--accent);
+    transform: scaleY(0);
+    transform-origin: center;
+    transition: transform .18s ease;
 }
 
 .channel-row:last-child {
     border-bottom: 1px solid var(--border);
 }
 
+@media (hover: hover) and (pointer: fine) {
+
+    .channel-row:hover {
+        padding-left: 26px;
+    }
+
+    .channel-row:hover::before {
+        transform: scaleY(1);
+    }
+
+    .channel-row:hover .channel-name {
+        color: var(--accent);
+    }
+
+}
+
 .channel-rank {
     font-family: var(--serif);
-    font-size: 22px;
+    font-style: italic;
+    font-weight: 500;
+    font-size: 21px;
     color: var(--muted-dim);
     width: 34px;
     flex-shrink: 0;
@@ -770,7 +832,7 @@ nav {
     border-radius: 50%;
     overflow: hidden;
     background: var(--surface2);
-    border: 1px solid var(--border);
+    border: 1px solid var(--border-strong);
     flex-shrink: 0;
 }
 
@@ -786,14 +848,16 @@ nav {
 }
 
 .channel-name {
+    font-family: var(--serif);
     font-weight: 600;
-    font-size: 15px;
+    font-size: 16px;
+    transition: color .15s ease;
 }
 
 .channel-meta {
     color: var(--muted-dim);
     font-size: 12px;
-    margin-top: 3px;
+    margin-top: 4px;
 }
 
 .channel-row .btn {
@@ -803,7 +867,7 @@ nav {
 }
 
 footer {
-    margin-top: 70px;
+    margin-top: 74px;
     padding: 32px var(--page-pad);
     border-top: 1px solid var(--border);
     color: var(--muted-dim);
@@ -834,7 +898,7 @@ footer {
 
     .grid {
         grid-template-columns: repeat(1, minmax(0,1fr));
-        gap: 22px;
+        gap: 24px;
     }
 
     .channel-row .btn {
@@ -845,8 +909,12 @@ footer {
         display: none;
     }
 
+    .hero-frame {
+        padding-top: 10px;
+    }
+
     .hero-content {
-        padding: 20px var(--page-pad) 24px;
+        padding: 22px var(--page-pad) 24px;
     }
 
     .card-title {
@@ -858,9 +926,6 @@ footer {
     }
 
 }
-
-
-
 
 @media (max-width: 350px) {
     .hero-visual { aspect-ratio: auto; height: 220px; }
@@ -877,7 +942,11 @@ footer {
     class="logo"
     href="{{ url_for('index') }}"
 >
-    K<span>SS</span>
+<svg class="logo-play" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+<circle cx="12" cy="12" r="12" fill="var(--accent)"/>
+<path d="M9.5 7.2v9.6l8-4.8z" fill="var(--text)"/>
+</svg>
+    KSS
 </a>
 
 <div class="nav-center">
@@ -908,7 +977,7 @@ footer {
     title="Dashboard"
 >
 <svg class="nav-avatar-shape" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-<path d="M30 8 C24 8 19 13 19 20 L19 80 C19 87 24 92 30 92 C33 92 36 91 39 89 L88 54 C93 50 93 42 88 38 L39 11 C36 9 33 8 30 8 Z"/>
+<circle cx="50" cy="50" r="50"/>
 </svg>
 <span class="nav-avatar-letter">{{ (current_user.username or current_user.display_name or '?')[0]|upper }}</span>
 </a>
@@ -949,6 +1018,8 @@ footer {
     data-slide="{{ loop.index0 }}"
 >
 
+<div class="hero-frame">
+
 <div class="hero-visual">
 
 {% if video.thumbnail_url %}
@@ -977,11 +1048,9 @@ footer {
 
 </div>
 
-<div class="hero-content">
+</div>
 
-<p class="hero-eyebrow">
-    Just uploaded · <em>{{ video.channel_name }}</em>
-</p>
+<div class="hero-content">
 
 <h1>
     {{ video.title }}
@@ -1184,6 +1253,13 @@ footer {
 
 <div class="section-head">
 
+<div>
+
+<h2>
+    Categories
+</h2>
+
+</div>
 
 </div>
 
@@ -1216,7 +1292,7 @@ footer {
 <div class="section-head">
 
 <h2>
-    Popular creators
+    Leading creators
 </h2>
 
 </div>

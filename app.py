@@ -30,6 +30,7 @@ except ImportError:
     Cache = None
 
 load_dotenv()
+print("DB_SSL_DISABLED raw value:", repr(os.getenv('DB_SSL_DISABLED')))
 
 app = Flask(__name__)
 
@@ -44,14 +45,40 @@ cloudinary.config(
     api_secret=os.getenv("CLOUDINARY_API_SECRET")
 )
 
-# ---- Simple in-memory cache (safe for single-node gunicorn) ----
+# ---- Cache ----
+# IMPORTANT: SimpleCache lives in one process's memory. If you run gunicorn
+# with more than 1 worker (you should, for real traffic), each worker gets
+# its OWN copy of this cache — a "cached" homepage still gets hit N times
+# (once per worker) instead of once. Set REDIS_URL to share one cache across
+# all workers; this is the single biggest lever for surviving a traffic spike
+# on one video, since every viewer of that video hits the same cache keys.
+REDIS_URL = os.getenv('REDIS_URL', 'redis://localhost:6379/0')
+
 if HAS_CACHE:
     cache = Cache(app, config={
-        'CACHE_TYPE': os.getenv('CACHE_TYPE', 'SimpleCache'),
+        'CACHE_TYPE': 'RedisCache',
+        'CACHE_REDIS_URL': REDIS_URL,
         'CACHE_DEFAULT_TIMEOUT': 60,
+        'CACHE_KEY_PREFIX': 'kss:',
     })
+    print(f"Cache: Redis ({REDIS_URL})")
 else:
     cache = None
+
+    
+
+def cached_fetch(key, timeout, loader):
+    """Get-or-set helper: read `key` from cache, or run `loader()` and store
+    the result. Centralizes the pattern already used on the homepage so the
+    same caching can be applied to hot per-video pages without repeating
+    the get/None-check/set boilerplate everywhere."""
+    if not cache:
+        return loader()
+    value = cache.get(key)
+    if value is None:
+        value = loader()
+        cache.set(key, value, timeout=timeout)
+    return value
 
 
 # ============================================================
@@ -89,8 +116,16 @@ if not DB_SSL_DISABLED:
 
 
 # Tune to MySQL max_connections minus what admin tools need.
-# 20 is a safe default for a small VPS.
-DB_POOL_SIZE = int(os.getenv('DB_POOL_SIZE', '5'))
+#
+# Each gunicorn WORKER process gets its own pool of this size. So total
+# connections opened = DB_POOL_SIZE * number of gunicorn workers. With
+# `gunicorn -w 4 --threads 8`, a pool of 10 per worker = 40 connections,
+# and with 8 threads sharing 10 connections per worker, threads will queue
+# for a connection under load. As a rule of thumb, set DB_POOL_SIZE close
+# to your per-worker thread count, and make sure
+# DB_POOL_SIZE * workers < your MySQL plan's max_connections (leave ~20%
+# headroom for admin/migration connections).
+DB_POOL_SIZE = int(os.getenv('DB_POOL_SIZE', '20'))
 
 _pool = None
 
@@ -824,7 +859,7 @@ def page_not_found(error):
 
 @app.errorhandler(500)
 def internal_server_error(error):
-    return (render_template('500.html'), 500)
+    return (render_template('404.html'), 500)
 
 
 @app.before_request
@@ -1497,7 +1532,10 @@ def videos():
 
 @app.route("/video/<slug>")
 def video_details(slug):
-    video = fetch_one("""
+    # This row is identical for every viewer of this video — cache it by
+    # slug for a short window. For a viral video this collapses thousands
+    # of identical lookups into one DB hit every ~15s.
+    video = cached_fetch(f'video:by_slug:{slug}', 15, lambda: fetch_one("""
         SELECT
             v.*, c.channel_id, c.channel_name, c.slug AS channel_slug,
             c.channel_logo, c.channel_banner, c.subscriber_count,
@@ -1508,10 +1546,11 @@ def video_details(slug):
         LEFT JOIN categories cat ON v.category_id = cat.category_id
         WHERE v.slug = %s
         LIMIT 1
-    """, (slug,))
+    """, (slug,)))
 
     if not video:
         abort(404)
+    video = dict(video)  # cache may return a shared object; copy before per-user edits
     if video["status"] != "published" and not is_admin():
         abort(404)
 
@@ -1538,7 +1577,8 @@ def video_details(slug):
         """, (user_id, video["channel_id"]))
         has_subscription = bool(subscription)
 
-    related = fetch_all("""
+    related = [dict(r) for r in cached_fetch(
+        f'video:related:{video["video_id"]}', 30, lambda: fetch_all("""
         SELECT
             v.video_id, v.title, v.slug, v.thumbnail_url,
             v.duration_seconds, v.is_free, v.purchase_enabled,
@@ -1551,7 +1591,7 @@ def video_details(slug):
           AND (v.category_id = %s OR v.channel_id = %s)
         ORDER BY v.total_views DESC
         LIMIT 8
-    """, (video["video_id"], video["category_id"], video["channel_id"]))
+    """, (video["video_id"], video["category_id"], video["channel_id"])))]
 
     annotate_video_lock_status(related, user_id)
 
@@ -1567,16 +1607,19 @@ def video_details(slug):
 
 @app.route("/watch/<slug>")
 def watch(slug):
-    video = fetch_one("""
+    # Same idea as video_details: this is the page 3,000 concurrent viewers
+    # of one launch video will all load. Cache the video row by slug.
+    video = cached_fetch(f'video:by_slug:{slug}', 15, lambda: fetch_one("""
         SELECT v.*, c.channel_name, c.slug AS channel_slug, c.channel_logo
         FROM videos v
         LEFT JOIN channels c ON v.channel_id = c.channel_id
         WHERE v.slug = %s
         LIMIT 1
-    """, (slug,))
+    """, (slug,)))
 
     if not video:
         abort(404)
+    video = dict(video)
     if video["status"] != "published" and not is_admin():
         abort(404)
 
@@ -1591,7 +1634,8 @@ def watch(slug):
         flash("You do not have access to this video.", "error")
         return redirect(url_for("video_details", slug=video["slug"]))
 
-    suggested_videos = fetch_all("""
+    suggested_videos = [dict(r) for r in cached_fetch(
+        f'video:suggested:{video["video_id"]}', 30, lambda: fetch_all("""
         SELECT
             v.video_id, v.title, v.slug, v.thumbnail_url,
             v.duration_seconds, v.is_free, v.purchase_enabled,
@@ -1603,9 +1647,13 @@ def watch(slug):
           AND (v.category_id = %s OR v.channel_id = %s)
         ORDER BY v.total_views DESC
         LIMIT 8
-    """, (video["video_id"], video["category_id"], video["channel_id"]))
+    """, (video["video_id"], video["category_id"], video["channel_id"])))]
 
-    comments = fetch_all("""
+    # Comments change more often, so a shorter TTL — still turns thousands
+    # of identical reads into one DB hit every few seconds instead of one
+    # per pageview.
+    comments = [dict(r) for r in cached_fetch(
+        f'video:comments:{video["video_id"]}', 8, lambda: fetch_all("""
         SELECT
             cm.comment_id, cm.comment_text, cm.created_at,
             u.user_id, u.full_name, u.username, u.profile_image
@@ -1616,7 +1664,7 @@ def watch(slug):
           AND cm.parent_comment_id IS NULL
         ORDER BY cm.created_at DESC
         LIMIT 50
-    """, (video["video_id"],))
+    """, (video["video_id"],)))]
 
     user_reaction = None
     if user_id:
@@ -1797,6 +1845,15 @@ def video_reaction(video_id):
         WHERE user_id = %s AND video_id = %s LIMIT 1
     """, (user_id, video_id))
 
+    # Instead of recomputing SUM(reaction='like') over every row this video
+    # has ever received (a full table scan that gets slower the more
+    # popular the video is, right when it's getting hammered), apply the
+    # delta directly to the counter columns with a single atomic UPDATE.
+    # This is O(1) per click and safe under concurrency: MySQL serializes
+    # the += / -= on that row rather than us doing a racy read-modify-write
+    # in Python.
+    like_delta = dislike_delta = 0
+
     if existing:
         if existing['reaction'] == reaction:
             execute_query(
@@ -1804,36 +1861,47 @@ def video_reaction(video_id):
                 (existing['reaction_id'],)
             )
             current_reaction = None
+            if reaction == 'like':
+                like_delta = -1
+            else:
+                dislike_delta = -1
         else:
             execute_query(
                 'UPDATE video_reactions SET reaction = %s WHERE reaction_id = %s',
                 (reaction, existing['reaction_id'])
             )
             current_reaction = reaction
+            if reaction == 'like':
+                like_delta, dislike_delta = 1, -1
+            else:
+                like_delta, dislike_delta = -1, 1
     else:
         execute_query("""
             INSERT INTO video_reactions (user_id, video_id, reaction)
             VALUES (%s, %s, %s)
         """, (user_id, video_id, reaction))
         current_reaction = reaction
-
-    counts = fetch_one("""
-        SELECT
-            SUM(reaction = 'like') AS likes,
-            SUM(reaction = 'dislike') AS dislikes
-        FROM video_reactions WHERE video_id = %s
-    """, (video_id,))
-    likes = int(counts['likes'] or 0)
-    dislikes = int(counts['dislikes'] or 0)
+        if reaction == 'like':
+            like_delta = 1
+        else:
+            dislike_delta = 1
 
     execute_query("""
-        UPDATE videos SET total_likes = %s, total_dislikes = %s
+        UPDATE videos
+        SET total_likes = GREATEST(0, total_likes + %s),
+            total_dislikes = GREATEST(0, total_dislikes + %s)
         WHERE video_id = %s
-    """, (likes, dislikes, video_id))
+    """, (like_delta, dislike_delta, video_id))
+
+    counts = fetch_one(
+        'SELECT total_likes, total_dislikes FROM videos WHERE video_id = %s',
+        (video_id,)
+    ) or {'total_likes': 0, 'total_dislikes': 0}
 
     return jsonify({
         'success': True, 'reaction': current_reaction,
-        'likes': likes, 'dislikes': dislikes,
+        'likes': int(counts['total_likes'] or 0),
+        'dislikes': int(counts['total_dislikes'] or 0),
     })
 
 
@@ -3472,9 +3540,18 @@ if __name__ == '__main__':
 
 if __name__ == '__main__':
     # NEVER use debug=True in production.
-    # Run with gunicorn instead:
-    #   gunicorn -w 4 -k gthread --threads 8 --timeout 60 \
+    # Run with gunicorn instead. This app is I/O-bound (waiting on MySQL and
+    # on Bunny/Paystack HTTP calls), so threads help a lot per worker:
+    #   gunicorn -w <2*CPU_CORES+1> -k gthread --threads 8 --timeout 60 \
+    #            --max-requests 1000 --max-requests-jitter 100 \
     #            -b 0.0.0.0:5003 app:app
+    #
+    # --max-requests recycles workers periodically, which caps the damage
+    # from any slow memory growth over a long high-traffic session.
+    #
+    # Remember: DB_POOL_SIZE is PER WORKER. Check that
+    # DB_POOL_SIZE * worker_count stays comfortably under your MySQL plan's
+    # max_connections before you raise worker count for a launch.
     app.run(
         host='0.0.0.0',
         port=int(os.getenv('PORT', '5003')),

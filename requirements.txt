@@ -6,3 +6,4 @@ requests
 certifi
 cloudinary
 gunicorn
+redis

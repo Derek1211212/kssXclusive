@@ -58,6 +58,11 @@ a {
     color: inherit;
 }
 
+@media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    * { transition: none !important; }
+}
+
 /* NAV */
 
 nav {
@@ -75,16 +80,36 @@ nav {
 }
 
 .logo {
-    font-family: var(--serif);
-    color: var(--text);
-    font-size: 24px;
-    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
     text-decoration: none;
-    letter-spacing: -.3px;
 }
 
-.logo span {
-    color: var(--accent);
+.logo-badge {
+    width: 27px;
+    height: 27px;
+    flex-shrink: 0;
+    border-radius: 8px;
+    background: #e5402b;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.logo-badge svg {
+    width: 11px;
+    height: 11px;
+    margin-left: 1px;
+    fill: #fff;
+}
+
+.logo-word {
+    font-family: var(--sans);
+    color: var(--text);
+    font-size: 19px;
+    font-weight: 800;
+    letter-spacing: -.2px;
 }
 
 .nav-links {
@@ -103,84 +128,119 @@ nav {
     transition: color .15s ease, background .15s ease;
 }
 
-.nav-links a:hover {
+.nav-links a:hover,
+.nav-links a:focus-visible {
     color: var(--text);
     background: rgba(255,255,255,.05);
+}
+
+a:focus-visible,
+button:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
 }
 
 /* LAYOUT */
 
 .container {
-    width: min(1250px, 90%);
-    margin: 48px auto 96px;
+    width: min(1200px, 90%);
+    margin: 40px auto 100px;
 }
 
-.main {
+.layout {
     display: grid;
-    grid-template-columns: minmax(0,1.35fr) minmax(300px,.65fr);
-    gap: 44px;
+    gap: 40px 48px;
+    grid-template-columns: minmax(0,1.4fr) minmax(300px,.6fr);
+    grid-template-areas:
+        "hero  hero"
+        "title pass"
+        "channel pass"
+        "stats pass";
     align-items: start;
 }
 
-/* POSTER / HEADER */
+.a-hero    { grid-area: hero; }
+.a-title   { grid-area: title; }
+.a-channel { grid-area: channel; }
+.a-stats   { grid-area: stats; }
+.a-pass    { grid-area: pass; position: sticky; top: 92px; }
 
-.poster {
+/* HERO */
+
+.hero {
+    position: relative;
     aspect-ratio: 16/9;
     overflow: hidden;
     background: var(--surface2);
     border: 1px solid var(--border);
-    border-radius: 12px;
-    position: relative;
-    box-shadow: 0 20px 50px -20px rgba(0,0,0,.6);
+    border-radius: 14px;
+    box-shadow: 0 24px 60px -28px rgba(0,0,0,.65);
 }
 
-.poster img {
+.hero img {
     width: 100%;
     height: 100%;
     object-fit: cover;
     display: block;
 }
 
-.category {
-    display: inline-block;
-    color: var(--accent);
-    font-size: 12px;
+.hero-scrim {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(5,10,13,0) 45%, rgba(5,10,13,.85) 100%);
+    pointer-events: none;
+}
+
+.hero-tag {
+    position: absolute;
+    left: 20px;
+    bottom: 18px;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    color: var(--accent2);
+    font-size: 12.5px;
     font-weight: 600;
-    letter-spacing: .06em;
-    text-transform: uppercase;
-    margin-top: 26px;
-    padding: 5px 11px;
-    border: 1px solid rgba(22,198,180,.3);
-    background: rgba(22,198,180,.08);
+    padding: 7px 13px 7px 11px;
+    border: 1px solid rgba(22,198,180,.35);
+    background: rgba(5,10,13,.55);
+    backdrop-filter: blur(6px);
     border-radius: 100px;
 }
 
-/* MOBILE QUICK ACTIONS (shown right under the poster, hidden on desktop) */
-
-.quick-actions {
-    display: none;
+.hero-tag::before {
+    content: "";
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 8px 1px rgba(22,198,180,.7);
 }
+
+/* TITLE / CHANNEL */
 
 h1 {
     font-family: var(--serif);
     font-weight: 600;
-    font-size: clamp(28px, 4.5vw, 42px);
-    line-height: 1.12;
-    letter-spacing: -.5px;
-    margin: 16px 0 26px;
+    font-size: clamp(28px, 4vw, 40px);
+    line-height: 1.14;
+    letter-spacing: -.4px;
+    margin: 22px 0 0;
+    max-width: 34ch;
 }
 
-.channel {
+.channel-row {
     display: flex;
     align-items: center;
-    gap: 13px;
+    gap: 14px;
+    margin-top: 26px;
     padding-top: 22px;
     border-top: 1px solid var(--border);
 }
 
-.channel-logo {
-    width: 44px;
-    height: 44px;
+.channel-avatar {
+    width: 46px;
+    height: 46px;
     border-radius: 50%;
     overflow: hidden;
     background: var(--surface2);
@@ -188,43 +248,42 @@ h1 {
     flex-shrink: 0;
 }
 
-.channel-logo img {
+.channel-avatar img {
     width: 100%;
     height: 100%;
     object-fit: cover;
     display: block;
 }
 
-.channel-info a {
+.channel-meta {
+    flex: 1;
+    min-width: 0;
+}
+
+.channel-meta a {
     color: var(--text);
     font-weight: 600;
     text-decoration: none;
     font-size: 15px;
-    transition: color .15s ease;
 }
 
-.channel-info a:hover {
+.channel-meta a:hover {
     color: var(--accent);
 }
 
-.channel-info span {
-    color: var(--muted-dim);
+.channel-meta span {
     display: block;
+    color: var(--muted-dim);
     font-size: 12.5px;
     margin-top: 3px;
 }
 
-.follow {
-    margin-top: 18px;
-    display: flex;
-    gap: 8px;
-}
-
-.follow button {
+.follow-btn {
+    flex-shrink: 0;
     border: 1px solid var(--border-strong);
     background: transparent;
     color: var(--text);
-    padding: 10px 18px;
+    padding: 10px 20px;
     font-size: 13px;
     font-weight: 600;
     border-radius: 100px;
@@ -233,175 +292,213 @@ h1 {
     transition: border-color .15s ease, color .15s ease, background .15s ease;
 }
 
-.follow button:hover {
+.follow-btn:hover {
     border-color: var(--accent-dim);
     background: rgba(22,198,180,.06);
 }
 
-.follow button.active {
+.follow-btn.active {
     color: var(--accent);
     border-color: var(--accent-dim);
     background: rgba(22,198,180,.1);
 }
 
-/* ASIDE / ACTIONS */
+/* STATS STRIP */
 
-aside {
-    position: sticky;
-    top: 92px;
+.stats-strip {
+    display: flex;
+    margin-top: 24px;
 }
 
-.actions {
-    display: grid;
-    gap: 10px;
-    padding: 20px;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 12px;
+.stat {
+    padding: 0 24px;
+    border-left: 1px solid var(--border);
 }
 
-.unlock-intro {
-    padding: 14px 15px;
+.stat:first-child {
+    padding-left: 0;
+    border-left: none;
+}
+
+.stat span {
+    display: block;
+    color: var(--muted-dim);
+    font-size: 12px;
+    margin-bottom: 5px;
+}
+
+.stat strong {
+    font-family: var(--serif);
+    font-size: 18px;
+    font-weight: 600;
+}
+
+/* PASS PANEL (ticket-style access card) */
+
+.pass-note {
+    padding: 15px 16px;
     border: 1px solid rgba(22,198,180,.28);
     background: rgba(22,198,180,.08);
     color: #d7f6f1;
     font-size: 13px;
     line-height: 1.5;
-    border-radius: 8px;
-    margin-bottom: 4px;
+    border-radius: 10px;
+    margin-bottom: 14px;
 }
 
-.unlock-intro strong {
+.pass-note strong {
     display: block;
     color: var(--accent);
-    font-size: 14px;
+    font-size: 14.5px;
     margin-bottom: 3px;
     font-weight: 600;
 }
 
-.unavailable-access {
-    padding: 14px 15px;
-    border: 1px solid var(--border);
-    color: var(--muted);
-    font-size: 13px;
-    line-height: 1.5;
-    border-radius: 8px;
-}
-
-.action {
-    width: 100%;
-    padding: 16px 18px;
-    border-radius: 8px;
-    border: 1px solid var(--border-strong);
-    background: var(--surface2);
-    color: var(--text);
+.owned-card {
+    display: block;
     text-decoration: none;
-    font-weight: 600;
-    text-align: center;
-    font-size: 14px;
-    transition: border-color .15s ease, background .15s ease, transform .1s ease;
-}
-
-.action:hover {
-    border-color: var(--accent-dim);
-    background: rgba(255,255,255,.04);
-}
-
-.action:active {
-    transform: scale(.99);
-}
-
-.action.primary {
+    padding: 26px 22px;
+    border-radius: 14px;
     background: var(--accent);
-    color: #1a1002;
-    border-color: var(--accent);
+    color: #0a1f1d;
+    text-align: center;
 }
 
-.action.primary:hover {
-    background: var(--accent2);
-    border-color: var(--accent2);
-}
-
-.price {
+.owned-card strong {
+    display: block;
     font-family: var(--serif);
     font-size: 19px;
     font-weight: 600;
-    display: block;
-    margin-top: 4px;
 }
 
-.action small {
+.owned-card span {
     display: block;
-    color: var(--muted-dim);
-    margin-top: 6px;
-    font-weight: 400;
-    font-size: 12px;
-}
-
-.action.primary small {
+    margin-top: 5px;
+    font-size: 12.5px;
     color: #173f3b;
 }
 
-.stats {
-    margin-top: 20px;
-    padding: 18px 20px;
-    background: var(--surface);
+.ticket {
+    position: relative;
     border: 1px solid var(--border);
-    border-radius: 12px;
+    background: var(--surface);
+    border-radius: 14px;
 }
 
-.stats-row {
+.ticket-row {
+    position: relative;
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    font-size: 12.5px;
-    color: var(--muted-dim);
-}
-
-.stats-row + .stats-row {
-    margin-top: 12px;
-    padding-top: 12px;
-    border-top: 1px solid var(--border);
-}
-
-.stats-row strong {
+    justify-content: space-between;
+    gap: 14px;
+    padding: 20px 22px;
+    text-decoration: none;
     color: var(--text);
+    transition: background .15s ease;
+}
+
+.ticket-row:first-child { border-radius: 14px 14px 0 0; }
+.ticket-row:last-child  { border-radius: 0 0 14px 14px; }
+.ticket-row:only-child  { border-radius: 14px; }
+
+.ticket-row:hover {
+    background: rgba(255,255,255,.03);
+}
+
+.ticket-row:not(:first-child) {
+    border-top: 1px dashed var(--border-strong);
+}
+
+.ticket-row:not(:first-child)::before,
+.ticket-row:not(:first-child)::after {
+    content: "";
+    position: absolute;
+    top: -9px;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--bg);
+}
+
+.ticket-row:not(:first-child)::before { left: -1px; }
+.ticket-row:not(:first-child)::after  { right: -1px; }
+
+.ticket-row-info {
+    min-width: 0;
+}
+
+.ticket-row-info strong {
+    display: block;
+    font-size: 14.5px;
     font-weight: 600;
-    font-size: 13.5px;
 }
 
-/* RELATED */
-
-.related {
-    margin-top: 76px;
+.ticket-row-info span {
+    display: block;
+    color: var(--muted-dim);
+    font-size: 12px;
+    margin-top: 4px;
 }
 
-.related h2 {
+.ticket-row-price {
+    flex-shrink: 0;
+    text-align: right;
+}
+
+.ticket-row-price strong {
+    display: block;
+    font-family: var(--serif);
+    font-size: 19px;
+    font-weight: 600;
+    color: var(--accent2);
+}
+
+.ticket-row.is-buy .ticket-row-price strong { color: var(--accent2); }
+
+.ticket-row-price span {
+    display: block;
+    color: var(--muted-dim);
+    font-size: 11.5px;
+    margin-top: 3px;
+}
+
+.pass-empty {
+    padding: 18px 20px;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+/* RELATED SHELF */
+
+.shelf {
+    margin-top: 80px;
+}
+
+.shelf h2 {
     font-family: var(--serif);
     font-weight: 600;
     font-size: 22px;
-    margin: 0 0 24px;
+    margin: 0 0 22px;
     padding-bottom: 16px;
     border-bottom: 1px solid var(--border);
 }
 
-.grid {
+.shelf-track {
     display: grid;
     grid-template-columns: repeat(4, minmax(0,1fr));
     gap: 22px;
 }
 
-.card {
+.reel {
     text-decoration: none;
     display: block;
-    transition: transform .18s ease;
 }
 
-.card:hover {
-    transform: translateY(-3px);
-}
-
-.thumb {
+.reel-frame {
+    position: relative;
     aspect-ratio: 16/9;
     overflow: hidden;
     background: var(--surface2);
@@ -410,11 +507,11 @@ aside {
     transition: border-color .18s ease;
 }
 
-.card:hover .thumb {
+.reel:hover .reel-frame {
     border-color: var(--accent-dim);
 }
 
-.thumb img {
+.reel-frame img {
     width: 100%;
     height: 100%;
     object-fit: cover;
@@ -422,20 +519,36 @@ aside {
     transition: transform .35s ease;
 }
 
-.card:hover .thumb img {
+.reel:hover .reel-frame img {
     transform: scale(1.04);
 }
 
-.card-title {
+.sprockets {
+    position: absolute;
+    top: 6px;
+    left: 6px;
+    right: 6px;
+    display: flex;
+    justify-content: space-between;
+    pointer-events: none;
+}
+
+.sprockets span {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: rgba(5,10,13,.55);
+}
+
+.reel-title {
     margin-top: 12px;
     font-family: var(--serif);
     font-weight: 600;
     font-size: 14.5px;
     line-height: 1.35;
-    color: var(--text);
 }
 
-.card-channel {
+.reel-channel {
     color: var(--muted-dim);
     font-size: 11.5px;
     margin-top: 6px;
@@ -443,25 +556,22 @@ aside {
 
 @media (max-width: 900px) {
 
-    .main {
+    .layout {
         grid-template-columns: 1fr;
-        gap: 32px;
+        grid-template-areas:
+            "hero"
+            "title"
+            "pass"
+            "channel"
+            "stats";
     }
 
-    aside {
+    .a-pass {
         position: static;
+        margin-top: 4px;
     }
 
-    .quick-actions {
-        display: grid;
-        margin-top: 22px;
-    }
-
-    aside .actions {
-        display: none;
-    }
-
-    .grid {
+    .shelf-track {
         grid-template-columns: repeat(2, minmax(0,1fr));
     }
 
@@ -471,19 +581,23 @@ aside {
 
     .container {
         width: 92%;
-        margin: 32px auto 64px;
+        margin: 28px auto 64px;
     }
 
     .nav-links a:nth-child(1) {
         display: none;
     }
 
-    .grid {
+    .shelf-track {
         gap: 16px;
     }
 
-    .related {
+    .shelf {
         margin-top: 56px;
+    }
+
+    .stat {
+        padding: 0 16px;
     }
 
 }
@@ -500,7 +614,13 @@ aside {
     class="logo"
     href="{{ url_for('index') }}"
 >
-    K<span>SS</span>
+
+<span class="logo-badge">
+    <svg viewBox="0 0 24 24"><path d="M5 3l16 9-16 9V3z"/></svg>
+</span>
+
+<span class="logo-word">KSS</span>
+
 </a>
 
 <div class="nav-links">
@@ -534,11 +654,9 @@ aside {
 
 <main class="container">
 
-<div class="main">
+<div class="layout">
 
-<section>
-
-<div class="poster">
+<div class="a-hero hero">
 
 {% if video.thumbnail_url %}
 
@@ -549,143 +667,29 @@ aside {
 
 {% endif %}
 
-</div>
+<div class="hero-scrim"></div>
 
-
-<div class="actions quick-actions">
-
-{% if access_type %}
-
-<a
-    class="action primary"
-    href="{{ url_for(
-        'watch',
-        slug=video.slug
-    ) }}"
->
-    Watch now
-
-    <small>
-        You already have access
-    </small>
-</a>
-
-
-{% else %}
-
-{% if video.purchase_enabled %}
-
-<a
-    class="action primary"
-    href="{{ url_for(
-        'purchase_video',
-        video_id=video.video_id
-    ) }}"
->
-
-    Buy now
-    <span class="price">
-        {{ video.currency or 'GHS' }}
-        {{ "%.2f"|format(
-            video.purchase_price|float
-        ) }}
-    </span>
-
-    <small>
-        Permanent access
-    </small>
-
-</a>
-
-{% endif %}
-
-
-{% if video.rental_enabled %}
-
-<a
-    class="action"
-    href="{{ url_for(
-        'rent_video',
-        video_id=video.video_id
-    ) }}"
->
-
-    Rent for
-    <span class="price">
-        {{ video.currency or 'GHS' }}
-        {{ "%.2f"|format(
-            video.rental_price|float
-        ) }}
-    </span>
-
-    <small>
-        Access for
-        48 hours
-    </small>
-
-</a>
-
-{% endif %}
-
-
-{% if video.subscription_enabled
-      and not has_subscription %}
-
-<a
-    class="action"
-    href="{{ url_for(
-        'subscribe_channel',
-        channel_id=video.channel_id
-    ) }}"
->
-
-    Subscribe to channel
-
-    <small>
-        {{ video.currency or 'GHS' }}
-        {{ "%.2f"|format(
-            subscription_price|float
-        ) }}
-        / {{ subscription_days }} days
-    </small>
-
-</a>
-
-{% endif %}
-
-{% endif %}
-
-
-{% if video.is_free and not access_type %}
-
-<a
-    class="action primary"
-    href="{{ url_for(
-        'watch',
-        slug=video.slug
-    ) }}"
->
-    Watch free
-</a>
-
-{% endif %}
-
-</div>
-
-
-<div class="category">
+<span class="hero-tag">
     {{ video.category_name or "KSS video" }}
+</span>
+
 </div>
 
+
+<div class="a-title">
 
 <h1>
     {{ video.title }}
 </h1>
 
+</div>
 
-<div class="channel">
 
-<div class="channel-logo">
+<div class="a-channel">
+
+<div class="channel-row">
+
+<div class="channel-avatar">
 
 {% if video.channel_logo %}
 
@@ -698,7 +702,7 @@ aside {
 
 </div>
 
-<div class="channel-info">
+<div class="channel-meta">
 
 <a
     href="{{ url_for(
@@ -715,16 +719,11 @@ aside {
 
 </div>
 
-</div>
-
-
 {% if current_user %}
-
-<div class="follow">
 
 <button
     id="followButton"
-    class="{% if is_following %}active{% endif %}"
+    class="follow-btn {% if is_following %}active{% endif %}"
     onclick="toggleFollow()"
 >
     {% if is_following %}
@@ -734,204 +733,182 @@ aside {
     {% endif %}
 </button>
 
-</div>
-
 {% endif %}
 
+</div>
 
-</section>
+</div>
 
 
-<aside>
+<div class="a-stats">
 
-<div class="actions">
+<div class="stats-strip">
+
+<div class="stat">
+    <span>Views</span>
+    <strong>{{ video.total_views|views }}</strong>
+</div>
+
+<div class="stat">
+    <span>Published</span>
+    <strong>
+        {{ video.published_at.strftime('%d %b %Y')
+           if video.published_at else 'Recently' }}
+    </strong>
+</div>
+
+</div>
+
+</div>
+
+
+<div class="a-pass">
 
 {% if access_type %}
 
 <a
-    class="action primary"
+    class="owned-card"
     href="{{ url_for(
         'watch',
         slug=video.slug
     ) }}"
 >
-    Watch now
-
-    <small>
-        You already have access
-    </small>
+    <strong>Watch now</strong>
+    <span>You already have access</span>
 </a>
 
+{% elif video.is_free %}
+
+<a
+    class="owned-card"
+    href="{{ url_for(
+        'watch',
+        slug=video.slug
+    ) }}"
+>
+    <strong>Watch free</strong>
+    <span>No pass needed</span>
+</a>
 
 {% else %}
 
-<div class="unlock-intro">
-    <strong>Unlock this premium video</strong>
-    Choose a 48-hour rental or buy it once for permanent access.
+<div class="pass-note">
+    <strong>Get access</strong>
+    Buy once to keep it, rent a 48-hour screening, or join the channel.
 </div>
+
+{% if video.purchase_enabled or video.rental_enabled or (video.subscription_enabled and not has_subscription) %}
+
+<div class="ticket">
 
 {% if video.purchase_enabled %}
 
 <a
-    class="action primary"
+    class="ticket-row is-buy"
     href="{{ url_for(
         'purchase_video',
         video_id=video.video_id
     ) }}"
 >
-
-    Buy now
-    <span class="price">
-        {{ video.currency or 'GHS' }}
-        {{ "%.2f"|format(
-            video.purchase_price|float
-        ) }}
-    </span>
-
-    <small>
-        Permanent access
-    </small>
-
+    <div class="ticket-row-info">
+        <strong>Buy the video</strong>
+        <span>Yours to keep, watch anytime</span>
+    </div>
+    <div class="ticket-row-price">
+        <strong>
+            {{ video.currency or 'GHS' }}
+            {{ "%.2f"|format(video.purchase_price|float) }}
+        </strong>
+        <span>one-time</span>
+    </div>
 </a>
 
 {% endif %}
 
-
 {% if video.rental_enabled %}
 
 <a
-    class="action"
+    class="ticket-row"
     href="{{ url_for(
         'rent_video',
         video_id=video.video_id
     ) }}"
 >
-
-    Rent for
-    <span class="price">
-        {{ video.currency or 'GHS' }}
-        {{ "%.2f"|format(
-            video.rental_price|float
-        ) }}
-    </span>
-
-    <small>
-        Access for
-        48 hours
-    </small>
-
+    <div class="ticket-row-info">
+        <strong>Rent the video</strong>
+        <span>48-hour screening pass</span>
+    </div>
+    <div class="ticket-row-price">
+        <strong>
+            {{ video.currency or 'GHS' }}
+            {{ "%.2f"|format(video.rental_price|float) }}
+        </strong>
+        <span>48 hours</span>
+    </div>
 </a>
 
 {% endif %}
 
-
-{% if video.subscription_enabled
-      and not has_subscription %}
+{% if video.subscription_enabled and not has_subscription %}
 
 <a
-    class="action"
+    class="ticket-row"
     href="{{ url_for(
         'subscribe_channel',
         channel_id=video.channel_id
     ) }}"
 >
-
-    Subscribe to channel
-
-    <small>
-        {{ video.currency or 'GHS' }}
-        {{ "%.2f"|format(
-            subscription_price|float
-        ) }}
-        / {{ subscription_days }} days
-    </small>
-
-</a>
-
-{% endif %}
-
-{% if not video.purchase_enabled
-      and not video.rental_enabled
-      and not video.subscription_enabled %}
-<div class="unavailable-access">
-    This premium video does not have an active payment option yet.
-</div>
-{% endif %}
-
-{% endif %}
-
-
-{% if video.is_free and not access_type %}
-
-<a
-    class="action primary"
-    href="{{ url_for(
-        'watch',
-        slug=video.slug
-    ) }}"
->
-    Watch free
+    <div class="ticket-row-info">
+        <strong>Join {{ video.channel_name }}</strong>
+        <span>Access to everything on the channel</span>
+    </div>
+    <div class="ticket-row-price">
+        <strong>
+            {{ video.currency or 'GHS' }}
+            {{ "%.2f"|format(subscription_price|float) }}
+        </strong>
+        <span>every {{ subscription_days }} days</span>
+    </div>
 </a>
 
 {% endif %}
 
 </div>
 
+{% else %}
 
-<div class="stats">
-
-<div class="stats-row">
-
-<span>
-    Views
-</span>
-
-<strong>
-    {{ video.total_views|views }}
-</strong>
-
+<div class="pass-empty">
+    This video doesn't have an active payment option yet.
 </div>
 
+{% endif %}
 
-<div class="stats-row">
-
-<span>
-    Published
-</span>
-
-<strong>
-    {{ video.published_at.strftime('%d %b %Y')
-       if video.published_at else 'Recently' }}
-</strong>
+{% endif %}
 
 </div>
 
 </div>
 
-</aside>
 
-</div>
-
-
-<section class="related">
+<section class="shelf">
 
 <h2>
-    You may also like
+    More to watch
 </h2>
 
-<div class="grid">
+<div class="shelf-track">
 
 {% for item in related %}
 
 <a
-    class="card"
+    class="reel"
     href="{{ url_for(
         'video_details',
         slug=item.slug
     ) }}"
 >
 
-<div class="thumb">
+<div class="reel-frame">
 
 {% if item.thumbnail_url %}
 
@@ -943,13 +920,17 @@ aside {
 
 {% endif %}
 
+<div class="sprockets">
+    <span></span><span></span><span></span><span></span><span></span><span></span>
 </div>
 
-<div class="card-title">
+</div>
+
+<div class="reel-title">
     {{ item.title }}
 </div>
 
-<div class="card-channel">
+<div class="reel-channel">
     {{ item.channel_name }}
 </div>
 
